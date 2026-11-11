@@ -1,0 +1,2814 @@
+{
+  "ABIRoot": {
+    "kind": "Root",
+    "name": "BackgroundAssetsWrapper",
+    "printedName": "BackgroundAssetsWrapper",
+    "children": [
+      {
+        "kind": "Import",
+        "name": "Darwin",
+        "printedName": "Darwin",
+        "declKind": "Import",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "BackgroundAssets",
+        "printedName": "BackgroundAssets",
+        "declKind": "Import",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpack_deinit",
+        "printedName": "baw_assetpack_deinit(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpack",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpack",
+            "usr": "c:@S@baw_assetpack"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpack_deinit:",
+        "mangledName": "$s23BackgroundAssetsWrapper20baw_assetpack_deinityySo0d1_E0VF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpack_is_nonnull",
+        "printedName": "baw_assetpack_is_nonnull(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Bool",
+            "printedName": "Swift.Bool",
+            "usr": "s:Sb"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpack",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpack",
+            "usr": "c:@S@baw_assetpack"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpack_is_nonnull:",
+        "mangledName": "$s23BackgroundAssetsWrapper24baw_assetpack_is_nonnullySbSo0d1_E0VF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpack_id",
+        "printedName": "baw_assetpack_id(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpack",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpack",
+            "usr": "c:@S@baw_assetpack"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpack_id:",
+        "mangledName": "$s23BackgroundAssetsWrapper16baw_assetpack_idySpys4Int8VGSgSo0d1_E0VF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpack_id_deinit",
+        "printedName": "baw_assetpack_id_deinit(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpack_id_deinit:",
+        "mangledName": "$s23BackgroundAssetsWrapper23baw_assetpack_id_deinityySpys4Int8VGSgF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpack_downloadsize",
+        "printedName": "baw_assetpack_downloadsize(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Int",
+            "printedName": "Swift.Int",
+            "usr": "s:Si"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpack",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpack",
+            "usr": "c:@S@baw_assetpack"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpack_downloadsize:",
+        "mangledName": "$s23BackgroundAssetsWrapper26baw_assetpack_downloadsizeySiSo0d1_E0VF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpack_version",
+        "printedName": "baw_assetpack_version(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "UInt16",
+            "printedName": "Swift.UInt16",
+            "usr": "s:s6UInt16V"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpack",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpack",
+            "usr": "c:@S@baw_assetpack"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpack_version:",
+        "mangledName": "$s23BackgroundAssetsWrapper21baw_assetpack_versionys6UInt16VSo0d1_E0VF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpack_lang",
+        "printedName": "baw_assetpack_lang(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "baw_lang",
+            "printedName": "BackgroundAssetsWrapper.baw_lang",
+            "usr": "c:@S@baw_lang"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpack",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpack",
+            "usr": "c:@S@baw_assetpack"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpack_lang:",
+        "mangledName": "$s23BackgroundAssetsWrapper18baw_assetpack_langySo0d1_F0VSo0d1_E0VF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpack_userinfo",
+        "printedName": "baw_assetpack_userinfo(_:_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpack",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpack",
+            "usr": "c:@S@baw_assetpack"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutableRawPointer?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutableRawPointer",
+                "printedName": "Swift.UnsafeMutableRawPointer",
+                "usr": "s:Sv"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<Swift.Int>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<Swift.Int>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpack_userinfo:::",
+        "mangledName": "$s23BackgroundAssetsWrapper22baw_assetpack_userinfoyySo0d1_E0V_SvSgSpySiGSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Function",
+        "name": "baw_err_deinit",
+        "printedName": "baw_err_deinit(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_err",
+            "printedName": "BackgroundAssetsWrapper.baw_err",
+            "usr": "c:@S@baw_err"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_err_deinit:",
+        "mangledName": "$s23BackgroundAssetsWrapper14baw_err_deinityySo0d1_E0VF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Import",
+        "name": "BackgroundAssets",
+        "printedName": "BackgroundAssets",
+        "declKind": "Import",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Synchronization",
+        "printedName": "Synchronization",
+        "declKind": "Import",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "System",
+        "printedName": "System",
+        "declKind": "Import",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl"
+        ]
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_downloadstatusupdates",
+        "printedName": "baw_assetpackmanager_downloadstatusupdates(_:_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafePointer",
+                "printedName": "Swift.UnsafePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:SP"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutableRawPointer?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutableRawPointer",
+                "printedName": "Swift.UnsafeMutableRawPointer",
+                "usr": "s:Sv"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "((BackgroundAssetsWrapper.baw_assetpackmanager_downloadstatusupdate, Swift.UnsafeMutableRawPointer?) -> ())?",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BackgroundAssetsWrapper.baw_assetpackmanager_downloadstatusupdate, Swift.UnsafeMutableRawPointer?) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Tuple",
+                    "printedName": "(BackgroundAssetsWrapper.baw_assetpackmanager_downloadstatusupdate, Swift.UnsafeMutableRawPointer?)",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_assetpackmanager_downloadstatusupdate",
+                        "printedName": "BackgroundAssetsWrapper.baw_assetpackmanager_downloadstatusupdate",
+                        "usr": "c:@S@baw_assetpackmanager_downloadstatusupdate"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "Swift.UnsafeMutableRawPointer?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "UnsafeMutableRawPointer",
+                            "printedName": "Swift.UnsafeMutableRawPointer",
+                            "usr": "s:Sv"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_downloadstatusupdates:::",
+        "mangledName": "$s23BackgroundAssetsWrapper42baw_assetpackmanager_downloadstatusupdatesyySPys4Int8VGSg_SvSgySo0d1_E21_downloadstatusupdateV_AGtXCSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_manifest",
+        "printedName": "baw_assetpackmanager_manifest(_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutableRawPointer?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutableRawPointer",
+                "printedName": "Swift.UnsafeMutableRawPointer",
+                "usr": "s:Sv"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "((BackgroundAssetsWrapper.baw_assetpackmanifest_res, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?) -> ())?",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BackgroundAssetsWrapper.baw_assetpackmanifest_res, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Tuple",
+                    "printedName": "(BackgroundAssetsWrapper.baw_assetpackmanifest_res, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?)",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_assetpackmanifest_res",
+                        "printedName": "BackgroundAssetsWrapper.baw_assetpackmanifest_res",
+                        "usr": "c:@U@baw_assetpackmanifest_res"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_res_kind",
+                        "printedName": "BackgroundAssetsWrapper.baw_res_kind",
+                        "usr": "c:@E@baw_res_kind"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "Swift.UnsafeMutableRawPointer?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "UnsafeMutableRawPointer",
+                            "printedName": "Swift.UnsafeMutableRawPointer",
+                            "usr": "s:Sv"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_manifest::",
+        "mangledName": "$s23BackgroundAssetsWrapper29baw_assetpackmanager_manifestyySvSg_ySo0D22_assetpackmanifest_resV_So0d1_H5_kindVACtXCSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_assetpack_status",
+        "printedName": "baw_assetpackmanager_assetpack_status(_:_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpack",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpack",
+            "usr": "c:@S@baw_assetpack"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutableRawPointer?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutableRawPointer",
+                "printedName": "Swift.UnsafeMutableRawPointer",
+                "usr": "s:Sv"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "((BackgroundAssetsWrapper.baw_assetpack_status_res, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?) -> ())?",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BackgroundAssetsWrapper.baw_assetpack_status_res, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Tuple",
+                    "printedName": "(BackgroundAssetsWrapper.baw_assetpack_status_res, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?)",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_assetpack_status_res",
+                        "printedName": "BackgroundAssetsWrapper.baw_assetpack_status_res",
+                        "usr": "c:@U@baw_assetpack_status_res"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_res_kind",
+                        "printedName": "BackgroundAssetsWrapper.baw_res_kind",
+                        "usr": "c:@E@baw_res_kind"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "Swift.UnsafeMutableRawPointer?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "UnsafeMutableRawPointer",
+                            "printedName": "Swift.UnsafeMutableRawPointer",
+                            "usr": "s:Sv"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_assetpack_status:::",
+        "mangledName": "$s23BackgroundAssetsWrapper37baw_assetpackmanager_assetpack_statusyySo0d1_F0V_SvSgySo0d1_f1_G4_resV_So0d1_H5_kindVAEtXCSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_assetpack_status_local",
+        "printedName": "baw_assetpackmanager_assetpack_status_local(_:_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafePointer",
+                "printedName": "Swift.UnsafePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:SP"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutableRawPointer?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutableRawPointer",
+                "printedName": "Swift.UnsafeMutableRawPointer",
+                "usr": "s:Sv"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "((Swift.UInt8, Swift.UnsafeMutableRawPointer?) -> ())?",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(Swift.UInt8, Swift.UnsafeMutableRawPointer?) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Tuple",
+                    "printedName": "(Swift.UInt8, Swift.UnsafeMutableRawPointer?)",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "UInt8",
+                        "printedName": "Swift.UInt8",
+                        "usr": "s:s5UInt8V"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "Swift.UnsafeMutableRawPointer?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "UnsafeMutableRawPointer",
+                            "printedName": "Swift.UnsafeMutableRawPointer",
+                            "usr": "s:Sv"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_assetpack_status_local:::",
+        "mangledName": "$s23BackgroundAssetsWrapper43baw_assetpackmanager_assetpack_status_localyySPys4Int8VGSg_SvSgys5UInt8V_AGtXCSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_assetpack_local",
+        "printedName": "baw_assetpackmanager_assetpack_local(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Bool",
+            "printedName": "Swift.Bool",
+            "usr": "s:Sb"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafePointer",
+                "printedName": "Swift.UnsafePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:SP"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_assetpack_local:",
+        "mangledName": "$s23BackgroundAssetsWrapper36baw_assetpackmanager_assetpack_localySbSPys4Int8VGSgF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_assetpack_local_ensure",
+        "printedName": "baw_assetpackmanager_assetpack_local_ensure(_:_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpack",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpack",
+            "usr": "c:@S@baw_assetpack"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutableRawPointer?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutableRawPointer",
+                "printedName": "Swift.UnsafeMutableRawPointer",
+                "usr": "s:Sv"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "((BackgroundAssetsWrapper.baw_err, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?) -> ())?",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BackgroundAssetsWrapper.baw_err, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Tuple",
+                    "printedName": "(BackgroundAssetsWrapper.baw_err, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?)",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_err",
+                        "printedName": "BackgroundAssetsWrapper.baw_err",
+                        "usr": "c:@S@baw_err"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_res_kind",
+                        "printedName": "BackgroundAssetsWrapper.baw_res_kind",
+                        "usr": "c:@E@baw_res_kind"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "Swift.UnsafeMutableRawPointer?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "UnsafeMutableRawPointer",
+                            "printedName": "Swift.UnsafeMutableRawPointer",
+                            "usr": "s:Sv"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_assetpack_local_ensure:::",
+        "mangledName": "$s23BackgroundAssetsWrapper43baw_assetpackmanager_assetpack_local_ensureyySo0d1_F0V_SvSgySo0D4_errV_So0D9_res_kindVAEtXCSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_assetpack_local_ensure_update",
+        "printedName": "baw_assetpackmanager_assetpack_local_ensure_update(_:_:_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpack",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpack",
+            "usr": "c:@S@baw_assetpack"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Bool",
+            "printedName": "Swift.Bool",
+            "usr": "s:Sb"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutableRawPointer?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutableRawPointer",
+                "printedName": "Swift.UnsafeMutableRawPointer",
+                "usr": "s:Sv"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "((BackgroundAssetsWrapper.baw_err, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?) -> ())?",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BackgroundAssetsWrapper.baw_err, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Tuple",
+                    "printedName": "(BackgroundAssetsWrapper.baw_err, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?)",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_err",
+                        "printedName": "BackgroundAssetsWrapper.baw_err",
+                        "usr": "c:@S@baw_err"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_res_kind",
+                        "printedName": "BackgroundAssetsWrapper.baw_res_kind",
+                        "usr": "c:@E@baw_res_kind"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "Swift.UnsafeMutableRawPointer?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "UnsafeMutableRawPointer",
+                            "printedName": "Swift.UnsafeMutableRawPointer",
+                            "usr": "s:Sv"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_assetpack_local_ensure_update::::",
+        "mangledName": "$s23BackgroundAssetsWrapper50baw_assetpackmanager_assetpack_local_ensure_updateyySo0d1_F0V_SbSvSgySo0D4_errV_So0D9_res_kindVAEtXCSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_assetpack_local_ensure_updatev",
+        "printedName": "baw_assetpackmanager_assetpack_local_ensure_updatev(_:_:_:_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Int",
+            "printedName": "Swift.Int",
+            "usr": "s:Si"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafePointer<BackgroundAssetsWrapper.baw_assetpack>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafePointer",
+                "printedName": "Swift.UnsafePointer<BackgroundAssetsWrapper.baw_assetpack>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "baw_assetpack",
+                    "printedName": "BackgroundAssetsWrapper.baw_assetpack",
+                    "usr": "c:@S@baw_assetpack"
+                  }
+                ],
+                "usr": "s:SP"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Bool",
+            "printedName": "Swift.Bool",
+            "usr": "s:Sb"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutableRawPointer?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutableRawPointer",
+                "printedName": "Swift.UnsafeMutableRawPointer",
+                "usr": "s:Sv"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "((BackgroundAssetsWrapper.baw_err, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?) -> ())?",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BackgroundAssetsWrapper.baw_err, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Tuple",
+                    "printedName": "(BackgroundAssetsWrapper.baw_err, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?)",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_err",
+                        "printedName": "BackgroundAssetsWrapper.baw_err",
+                        "usr": "c:@S@baw_err"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_res_kind",
+                        "printedName": "BackgroundAssetsWrapper.baw_res_kind",
+                        "usr": "c:@E@baw_res_kind"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "Swift.UnsafeMutableRawPointer?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "UnsafeMutableRawPointer",
+                            "printedName": "Swift.UnsafeMutableRawPointer",
+                            "usr": "s:Sv"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_assetpack_local_ensure_updatev:::::",
+        "mangledName": "$s23BackgroundAssetsWrapper51baw_assetpackmanager_assetpack_local_ensure_updatevyySi_SPySo0d1_F0VGSgSbSvSgySo0D4_errV_So0D9_res_kindVAGtXCSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_assetpack_update",
+        "printedName": "baw_assetpackmanager_assetpack_update(_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutableRawPointer?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutableRawPointer",
+                "printedName": "Swift.UnsafeMutableRawPointer",
+                "usr": "s:Sv"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "((BackgroundAssetsWrapper.baw_assetpackmanager_assetpack_update_res, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?) -> ())?",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BackgroundAssetsWrapper.baw_assetpackmanager_assetpack_update_res, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Tuple",
+                    "printedName": "(BackgroundAssetsWrapper.baw_assetpackmanager_assetpack_update_res, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?)",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_assetpackmanager_assetpack_update_res",
+                        "printedName": "BackgroundAssetsWrapper.baw_assetpackmanager_assetpack_update_res",
+                        "usr": "c:@U@baw_assetpackmanager_assetpack_update_res"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_res_kind",
+                        "printedName": "BackgroundAssetsWrapper.baw_res_kind",
+                        "usr": "c:@E@baw_res_kind"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "Swift.UnsafeMutableRawPointer?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "UnsafeMutableRawPointer",
+                            "printedName": "Swift.UnsafeMutableRawPointer",
+                            "usr": "s:Sv"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_assetpack_update::",
+        "mangledName": "$s23BackgroundAssetsWrapper37baw_assetpackmanager_assetpack_updateyySvSg_ySo0d1_e1_f1_G4_resV_So0d1_H5_kindVACtXCSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_assetpack_remove",
+        "printedName": "baw_assetpackmanager_assetpack_remove(_:_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafePointer",
+                "printedName": "Swift.UnsafePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:SP"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutableRawPointer?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutableRawPointer",
+                "printedName": "Swift.UnsafeMutableRawPointer",
+                "usr": "s:Sv"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "((BackgroundAssetsWrapper.baw_err, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?) -> ())?",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BackgroundAssetsWrapper.baw_err, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Tuple",
+                    "printedName": "(BackgroundAssetsWrapper.baw_err, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?)",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_err",
+                        "printedName": "BackgroundAssetsWrapper.baw_err",
+                        "usr": "c:@S@baw_err"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_res_kind",
+                        "printedName": "BackgroundAssetsWrapper.baw_res_kind",
+                        "usr": "c:@E@baw_res_kind"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "Swift.UnsafeMutableRawPointer?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "UnsafeMutableRawPointer",
+                            "printedName": "Swift.UnsafeMutableRawPointer",
+                            "usr": "s:Sv"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_assetpack_remove:::",
+        "mangledName": "$s23BackgroundAssetsWrapper37baw_assetpackmanager_assetpack_removeyySPys4Int8VGSg_SvSgySo0D4_errV_So0D9_res_kindVAGtXCSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_lang_resolved",
+        "printedName": "baw_assetpackmanager_lang_resolved()",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "baw_lang",
+            "printedName": "BackgroundAssetsWrapper.baw_lang",
+            "usr": "c:@S@baw_lang"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_lang_resolved",
+        "mangledName": "$s23BackgroundAssetsWrapper34baw_assetpackmanager_lang_resolvedSo0d1_F0VyF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_lang_resolved_set",
+        "printedName": "baw_assetpackmanager_lang_resolved_set(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_lang",
+            "printedName": "BackgroundAssetsWrapper.baw_lang",
+            "usr": "c:@S@baw_lang"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_lang_resolved_set:",
+        "mangledName": "$s23BackgroundAssetsWrapper38baw_assetpackmanager_lang_resolved_setyySo0d1_F0VF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_lang_local",
+        "printedName": "baw_assetpackmanager_lang_local(_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutableRawPointer?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutableRawPointer",
+                "printedName": "Swift.UnsafeMutableRawPointer",
+                "usr": "s:Sv"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "((Swift.Int, Swift.UnsafePointer<BackgroundAssetsWrapper.baw_lang>?, Swift.UnsafeMutableRawPointer?) -> ())?",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(Swift.Int, Swift.UnsafePointer<BackgroundAssetsWrapper.baw_lang>?, Swift.UnsafeMutableRawPointer?) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Tuple",
+                    "printedName": "(Swift.Int, Swift.UnsafePointer<BackgroundAssetsWrapper.baw_lang>?, Swift.UnsafeMutableRawPointer?)",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Int",
+                        "printedName": "Swift.Int",
+                        "usr": "s:Si"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "Swift.UnsafePointer<BackgroundAssetsWrapper.baw_lang>?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "UnsafePointer",
+                            "printedName": "Swift.UnsafePointer<BackgroundAssetsWrapper.baw_lang>",
+                            "children": [
+                              {
+                                "kind": "TypeNominal",
+                                "name": "baw_lang",
+                                "printedName": "BackgroundAssetsWrapper.baw_lang",
+                                "usr": "c:@S@baw_lang"
+                              }
+                            ],
+                            "usr": "s:SP"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "Swift.UnsafeMutableRawPointer?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "UnsafeMutableRawPointer",
+                            "printedName": "Swift.UnsafeMutableRawPointer",
+                            "usr": "s:Sv"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_lang_local::",
+        "mangledName": "$s23BackgroundAssetsWrapper31baw_assetpackmanager_lang_localyySvSg_ySi_SPySo0d1_F0VGSgACtXCSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_lang_reconcile",
+        "printedName": "baw_assetpackmanager_lang_reconcile(_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutableRawPointer?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutableRawPointer",
+                "printedName": "Swift.UnsafeMutableRawPointer",
+                "usr": "s:Sv"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "((BackgroundAssetsWrapper.baw_err, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?) -> ())?",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BackgroundAssetsWrapper.baw_err, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Tuple",
+                    "printedName": "(BackgroundAssetsWrapper.baw_err, BackgroundAssetsWrapper.baw_res_kind, Swift.UnsafeMutableRawPointer?)",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_err",
+                        "printedName": "BackgroundAssetsWrapper.baw_err",
+                        "usr": "c:@S@baw_err"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "baw_res_kind",
+                        "printedName": "BackgroundAssetsWrapper.baw_res_kind",
+                        "usr": "c:@E@baw_res_kind"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "Swift.UnsafeMutableRawPointer?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "UnsafeMutableRawPointer",
+                            "printedName": "Swift.UnsafeMutableRawPointer",
+                            "usr": "s:Sv"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_lang_reconcile::",
+        "mangledName": "$s23BackgroundAssetsWrapper35baw_assetpackmanager_lang_reconcileyySvSg_ySo0D4_errV_So0D9_res_kindVACtXCSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_open",
+        "printedName": "baw_assetpackmanager_open(_:_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Int32",
+            "printedName": "Swift.Int32",
+            "usr": "s:s5Int32V"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafePointer",
+                "printedName": "Swift.UnsafePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:SP"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafePointer",
+                "printedName": "Swift.UnsafePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:SP"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_err>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_err>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "baw_err",
+                    "printedName": "BackgroundAssetsWrapper.baw_err",
+                    "usr": "c:@S@baw_err"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_open:::",
+        "mangledName": "$s23BackgroundAssetsWrapper25baw_assetpackmanager_openys5Int32VSPys4Int8VGSg_AHSpySo0D4_errVGSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_open_lang",
+        "printedName": "baw_assetpackmanager_open_lang(_:_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Int32",
+            "printedName": "Swift.Int32",
+            "usr": "s:s5Int32V"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafePointer",
+                "printedName": "Swift.UnsafePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:SP"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_lang",
+            "printedName": "BackgroundAssetsWrapper.baw_lang",
+            "usr": "c:@S@baw_lang"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_err>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_err>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "baw_err",
+                    "printedName": "BackgroundAssetsWrapper.baw_err",
+                    "usr": "c:@S@baw_err"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_open_lang:::",
+        "mangledName": "$s23BackgroundAssetsWrapper30baw_assetpackmanager_open_langys5Int32VSPys4Int8VGSg_So0d1_G0VSpySo0D4_errVGSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_url",
+        "printedName": "baw_assetpackmanager_url(_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafePointer",
+                "printedName": "Swift.UnsafePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:SP"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_err>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_err>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "baw_err",
+                    "printedName": "BackgroundAssetsWrapper.baw_err",
+                    "usr": "c:@S@baw_err"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_url::",
+        "mangledName": "$s23BackgroundAssetsWrapper24baw_assetpackmanager_urlySpys4Int8VGSgSPyADGSg_SpySo0D4_errVGSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_url_lang",
+        "printedName": "baw_assetpackmanager_url_lang(_:_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafePointer",
+                "printedName": "Swift.UnsafePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:SP"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_lang",
+            "printedName": "BackgroundAssetsWrapper.baw_lang",
+            "usr": "c:@S@baw_lang"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_err>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_err>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "baw_err",
+                    "printedName": "BackgroundAssetsWrapper.baw_err",
+                    "usr": "c:@S@baw_err"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_url_lang:::",
+        "mangledName": "$s23BackgroundAssetsWrapper29baw_assetpackmanager_url_langySpys4Int8VGSgSPyADGSg_So0d1_G0VSpySo0D4_errVGSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanager_url_deinit",
+        "printedName": "baw_assetpackmanager_url_deinit(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanager_url_deinit:",
+        "mangledName": "$s23BackgroundAssetsWrapper31baw_assetpackmanager_url_deinityySpys4Int8VGSgF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Function",
+        "name": "baw_lang_init",
+        "printedName": "baw_lang_init(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "baw_lang",
+            "printedName": "BackgroundAssetsWrapper.baw_lang",
+            "usr": "c:@S@baw_lang"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafePointer",
+                "printedName": "Swift.UnsafePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:SP"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_lang_init:",
+        "mangledName": "$s23BackgroundAssetsWrapper13baw_lang_initySo0d1_E0VSPys4Int8VGSgF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_lang_deinit",
+        "printedName": "baw_lang_deinit(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_lang",
+            "printedName": "BackgroundAssetsWrapper.baw_lang",
+            "usr": "c:@S@baw_lang"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_lang_deinit:",
+        "mangledName": "$s23BackgroundAssetsWrapper15baw_lang_deinityySo0d1_E0VF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_lang_is_nonnull",
+        "printedName": "baw_lang_is_nonnull(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Bool",
+            "printedName": "Swift.Bool",
+            "usr": "s:Sb"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_lang",
+            "printedName": "BackgroundAssetsWrapper.baw_lang",
+            "usr": "c:@S@baw_lang"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_lang_is_nonnull:",
+        "mangledName": "$s23BackgroundAssetsWrapper19baw_lang_is_nonnullySbSo0d1_E0VF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_lang_id_min",
+        "printedName": "baw_lang_id_min(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_lang",
+            "printedName": "BackgroundAssetsWrapper.baw_lang",
+            "usr": "c:@S@baw_lang"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_lang_id_min:",
+        "mangledName": "$s23BackgroundAssetsWrapper15baw_lang_id_minySpys4Int8VGSgSo0d1_E0VF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_lang_id_max",
+        "printedName": "baw_lang_id_max(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_lang",
+            "printedName": "BackgroundAssetsWrapper.baw_lang",
+            "usr": "c:@S@baw_lang"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_lang_id_max:",
+        "mangledName": "$s23BackgroundAssetsWrapper15baw_lang_id_maxySpys4Int8VGSgSo0d1_E0VF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_lang_id_deinit",
+        "printedName": "baw_lang_id_deinit(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_lang_id_deinit:",
+        "mangledName": "$s23BackgroundAssetsWrapper18baw_lang_id_deinityySpys4Int8VGSgF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_lang_equivalent",
+        "printedName": "baw_lang_equivalent(_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Bool",
+            "printedName": "Swift.Bool",
+            "usr": "s:Sb"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_lang",
+            "printedName": "BackgroundAssetsWrapper.baw_lang",
+            "usr": "c:@S@baw_lang"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_lang",
+            "printedName": "BackgroundAssetsWrapper.baw_lang",
+            "usr": "c:@S@baw_lang"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_lang_equivalent::",
+        "mangledName": "$s23BackgroundAssetsWrapper19baw_lang_equivalentySbSo0d1_E0V_ADtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Import",
+        "name": "BackgroundAssets",
+        "printedName": "BackgroundAssets",
+        "declKind": "Import",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "OSLog",
+        "printedName": "OSLog",
+        "declKind": "Import",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl"
+        ]
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanifest_deinit",
+        "printedName": "baw_assetpackmanifest_deinit(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpackmanifest",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpackmanifest",
+            "usr": "c:@U@baw_assetpackmanifest"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanifest_deinit:",
+        "mangledName": "$s23BackgroundAssetsWrapper28baw_assetpackmanifest_deinityySo0d1_E0VF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanifest_assetpack",
+        "printedName": "baw_assetpackmanifest_assetpack(_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpack",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpack",
+            "usr": "c:@S@baw_assetpack"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpackmanifest",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpackmanifest",
+            "usr": "c:@U@baw_assetpackmanifest"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafePointer<Swift.Int8>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafePointer",
+                "printedName": "Swift.UnsafePointer<Swift.Int8>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int8",
+                    "printedName": "Swift.Int8",
+                    "usr": "s:s4Int8V"
+                  }
+                ],
+                "usr": "s:SP"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanifest_assetpack::",
+        "mangledName": "$s23BackgroundAssetsWrapper31baw_assetpackmanifest_assetpackySo0d1_F0VSo0d1_E0V_SPys4Int8VGSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanifest_assetpackv",
+        "printedName": "baw_assetpackmanifest_assetpackv(_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_assetpack>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_assetpack>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "baw_assetpack",
+                    "printedName": "BackgroundAssetsWrapper.baw_assetpack",
+                    "usr": "c:@S@baw_assetpack"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpackmanifest",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpackmanifest",
+            "usr": "c:@U@baw_assetpackmanifest"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<Swift.Int>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<Swift.Int>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanifest_assetpackv::",
+        "mangledName": "$s23BackgroundAssetsWrapper32baw_assetpackmanifest_assetpackvySpySo0D10_assetpackVGSgSo0d1_E0V_SpySiGSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanifest_assetpackv_localized",
+        "printedName": "baw_assetpackmanifest_assetpackv_localized(_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_assetpack>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_assetpack>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "baw_assetpack",
+                    "printedName": "BackgroundAssetsWrapper.baw_assetpack",
+                    "usr": "c:@S@baw_assetpack"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpackmanifest",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpackmanifest",
+            "usr": "c:@U@baw_assetpackmanifest"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<Swift.Int>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<Swift.Int>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanifest_assetpackv_localized::",
+        "mangledName": "$s23BackgroundAssetsWrapper42baw_assetpackmanifest_assetpackv_localizedySpySo0D10_assetpackVGSgSo0d1_E0V_SpySiGSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanifest_assetpackv_localized_lang",
+        "printedName": "baw_assetpackmanifest_assetpackv_localized_lang(_:_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_assetpack>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_assetpack>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "baw_assetpack",
+                    "printedName": "BackgroundAssetsWrapper.baw_assetpack",
+                    "usr": "c:@S@baw_assetpack"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpackmanifest",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpackmanifest",
+            "usr": "c:@U@baw_assetpackmanifest"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_lang",
+            "printedName": "BackgroundAssetsWrapper.baw_lang",
+            "usr": "c:@S@baw_lang"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<Swift.Int>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<Swift.Int>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanifest_assetpackv_localized_lang:::",
+        "mangledName": "$s23BackgroundAssetsWrapper47baw_assetpackmanifest_assetpackv_localized_langySpySo0D10_assetpackVGSgSo0d1_E0V_So0d1_H0VSpySiGSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanifest_assetpackv_deinit",
+        "printedName": "baw_assetpackmanifest_assetpackv_deinit(_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Int",
+            "printedName": "Swift.Int",
+            "usr": "s:Si"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_assetpack>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_assetpack>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "baw_assetpack",
+                    "printedName": "BackgroundAssetsWrapper.baw_assetpack",
+                    "usr": "c:@S@baw_assetpack"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanifest_assetpackv_deinit::",
+        "mangledName": "$s23BackgroundAssetsWrapper39baw_assetpackmanifest_assetpackv_deinityySi_SpySo0D10_assetpackVGSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanifest_lang_primary",
+        "printedName": "baw_assetpackmanifest_lang_primary(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "baw_lang",
+            "printedName": "BackgroundAssetsWrapper.baw_lang",
+            "usr": "c:@S@baw_lang"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpackmanifest",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpackmanifest",
+            "usr": "c:@U@baw_assetpackmanifest"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanifest_lang_primary:",
+        "mangledName": "$s23BackgroundAssetsWrapper34baw_assetpackmanifest_lang_primaryySo0d1_F0VSo0d1_E0VF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanifest_lang_resolved",
+        "printedName": "baw_assetpackmanifest_lang_resolved(_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "baw_lang",
+            "printedName": "BackgroundAssetsWrapper.baw_lang",
+            "usr": "c:@S@baw_lang"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpackmanifest",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpackmanifest",
+            "usr": "c:@U@baw_assetpackmanifest"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanifest_lang_resolved:",
+        "mangledName": "$s23BackgroundAssetsWrapper35baw_assetpackmanifest_lang_resolvedySo0d1_F0VSo0d1_E0VF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanifest_langv",
+        "printedName": "baw_assetpackmanifest_langv(_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_lang>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_lang>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "baw_lang",
+                    "printedName": "BackgroundAssetsWrapper.baw_lang",
+                    "usr": "c:@S@baw_lang"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "baw_assetpackmanifest",
+            "printedName": "BackgroundAssetsWrapper.baw_assetpackmanifest",
+            "usr": "c:@U@baw_assetpackmanifest"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<Swift.Int>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<Swift.Int>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanifest_langv::",
+        "mangledName": "$s23BackgroundAssetsWrapper27baw_assetpackmanifest_langvySpySo0D5_langVGSgSo0d1_E0V_SpySiGSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Function",
+        "name": "baw_assetpackmanifest_langv_deinit",
+        "printedName": "baw_assetpackmanifest_langv_deinit(_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Int",
+            "printedName": "Swift.Int",
+            "usr": "s:Si"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Optional",
+            "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_lang>?",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnsafeMutablePointer",
+                "printedName": "Swift.UnsafeMutablePointer<BackgroundAssetsWrapper.baw_lang>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "baw_lang",
+                    "printedName": "BackgroundAssetsWrapper.baw_lang",
+                    "usr": "c:@S@baw_lang"
+                  }
+                ],
+                "usr": "s:Sp"
+              }
+            ],
+            "usr": "s:Sq"
+          }
+        ],
+        "declKind": "Func",
+        "usr": "c:(cm)baw_assetpackmanifest_langv_deinit::",
+        "mangledName": "$s23BackgroundAssetsWrapper34baw_assetpackmanifest_langv_deinityySi_SpySo0D5_langVGSgtF",
+        "moduleName": "BackgroundAssetsWrapper",
+        "declAttributes": [
+          "AccessControl",
+          "ObjCImplementation",
+          "CDecl"
+        ],
+        "funcSelfKind": "NonMutating"
+      }
+    ],
+    "json_format_version": 8
+  },
+  "ConstValues": [
+    {
+      "filePath": "\/Volumes\/ADATA1TB\/wkspaces\/AppleUnityPlugIns\/plug-ins\/Apple.BackgroundAssets\/Native\/Background Assets Wrapper\/AssetPackManager.swift",
+      "kind": "Dictionary",
+      "offset": 749,
+      "length": 3,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Volumes\/ADATA1TB\/wkspaces\/AppleUnityPlugIns\/plug-ins\/Apple.BackgroundAssets\/Native\/Background Assets Wrapper\/AssetPackManifest.swift",
+      "kind": "StringLiteral",
+      "offset": 260,
+      "length": 36,
+      "value": "\"com.apple.backgroundassets.wrapper\""
+    },
+    {
+      "filePath": "\/Volumes\/ADATA1TB\/wkspaces\/AppleUnityPlugIns\/plug-ins\/Apple.BackgroundAssets\/Native\/Background Assets Wrapper\/AssetPackManifest.swift",
+      "kind": "StringLiteral",
+      "offset": 308,
+      "length": 19,
+      "value": "\"AssetPackManifest\""
+    }
+  ]
+}

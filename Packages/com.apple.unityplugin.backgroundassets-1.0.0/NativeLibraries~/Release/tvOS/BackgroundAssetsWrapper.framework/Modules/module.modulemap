@@ -1,0 +1,10 @@
+framework module BackgroundAssetsWrapper {
+  umbrella header "BackgroundAssetsWrapper.h"
+  export *
+
+  module * { export * }
+}
+
+module BackgroundAssetsWrapper.Swift {
+  header "BackgroundAssetsWrapper-Swift.h"
+}
