@@ -18,10 +18,10 @@ namespace AppleBackgroundAssetsTest.EditorTools
 	/// <summary>
 	/// Собирает Addressables-контент и превращает бандлы групп, использующих
 	/// <see cref="AppleBackgroundAssetBundleProvider"/>, в Apple asset pack:
-	///   Library/BackgroundAssetPacks/test_textures/              — промежуточное: бандлы (корень пространства имён пака)
-	///   Library/BackgroundAssetPacks/test_textures.manifest.json — промежуточное: манифест для ba-package
+	///   Library/BackgroundAssetPacks/TF1-Test-Package/              — промежуточное: бандлы (корень пространства имён пака)
+	///   Library/BackgroundAssetPacks/TF1-Test-Package.manifest.json — промежуточное: манифест для ba-package
 	///   Library/BackgroundAssetPacks/package.sh                  — пересобрать .aar вручную
-	///   Builds/BackgroundAssetPacks/test_textures.aar            — результат: архив для Transporter (только на macOS)
+	///   Builds/BackgroundAssetPacks/TF1-Test-Package.aar            — результат: архив для Transporter (только на macOS)
 	///   Builds/BackgroundAssetPacks/serve.sh                     — локальный mock-сервер ba-serve
 	/// Ничего запускать вручную не нужно: всё выполняется автоматически при Build / Build And Run для iOS.
 	/// </summary>
@@ -146,6 +146,9 @@ namespace AppleBackgroundAssetsTest.EditorTools
 		static void StagePack(AddressableAssetSettings settings, List<AddressableAssetGroup> groups,
 			AddressablesPlayerBuildResult result, BuildTarget target)
 		{
+			if (!System.Text.RegularExpressions.Regex.IsMatch(AssetPackId, "^[A-Za-z0-9-]+$"))
+				throw new InvalidOperationException($"Asset pack ID '{AssetPackId}' is invalid: App Store Connect allows only letters, digits and hyphens.");
+
 			var groupDirs = groups.Select(g => NormalizeDir(GetBuildDir(settings, g))).Distinct().ToList();
 
 			var bundlePaths = new List<string>();
