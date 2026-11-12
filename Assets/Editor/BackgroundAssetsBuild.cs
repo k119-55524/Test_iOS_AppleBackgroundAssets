@@ -18,27 +18,34 @@ namespace AppleBackgroundAssetsTest.EditorTools
 	/// <summary>
 	/// Собирает Addressables-контент и превращает бандлы групп, использующих
 	/// <see cref="AppleBackgroundAssetBundleProvider"/>, в Apple asset pack:
-	///   BackgroundAssetPacks/test_textures/            — бандлы (корень пространства имён пака)
-	///   BackgroundAssetPacks/test_textures.manifest.json — манифест для ba-package
-	///   BackgroundAssetPacks/test_textures.aar         — архив (только на macOS, через xcrun ba-package)
+	///   Library/BackgroundAssetPacks/test_textures/              — промежуточное: бандлы (корень пространства имён пака)
+	///   Library/BackgroundAssetPacks/test_textures.manifest.json — промежуточное: манифест для ba-package
+	///   Library/BackgroundAssetPacks/package.sh                  — пересобрать .aar вручную
+	///   Builds/BackgroundAssetPacks/test_textures.aar            — результат: архив для Transporter (только на macOS)
+	///   Builds/BackgroundAssetPacks/serve.sh                     — локальный mock-сервер ba-serve
 	/// Ничего запускать вручную не нужно: всё выполняется автоматически при Build / Build And Run для iOS.
 	/// </summary>
 	public static class BackgroundAssetsBuild
 	{
-		/// <summary>ID пака. Должен совпадать с assetPackId в BackgroundAssetsTestController.</summary>
-		public const string AssetPackId = "test_textures";
+		/// <summary>ID пака — берётся из BackgroundAssetsConfig (единственное место, где он задаётся).</summary>
+		public const string AssetPackId = BackgroundAssetsConfig.AssetPackId;
 
 		/// <summary>Политика загрузки: onDemand | prefetch | essential.</summary>
 		public const string DownloadPolicy = "onDemand";
 
-		public const string OutputFolderName = "BackgroundAssetPacks";
+		/// <summary>Готовый .aar (относительно корня проекта; Builds/ в .gitignore).</summary>
+		public const string OutputFolderName = "Builds/BackgroundAssetPacks";
+
+		/// <summary>Промежуточные файлы: бандлы и манифест (Library/ — кэш Unity, в .gitignore).</summary>
+		public const string StagingFolderName = "Library/BackgroundAssetPacks";
 
 		const string HostingConfigurationPath = "Assets/Apple Hosting Configuration.asset";
 
 		static string ProjectRoot => Path.GetDirectoryName(Application.dataPath);
 		public static string OutputRoot => Path.Combine(ProjectRoot, OutputFolderName);
-		public static string PackStagingDir => Path.Combine(OutputRoot, AssetPackId);
-		public static string ManifestPath => Path.Combine(OutputRoot, AssetPackId + ".manifest.json");
+		public static string StagingRoot => Path.Combine(ProjectRoot, StagingFolderName);
+		public static string PackStagingDir => Path.Combine(StagingRoot, AssetPackId);
+		public static string ManifestPath => Path.Combine(StagingRoot, AssetPackId + ".manifest.json");
 		public static string ArchivePath => Path.Combine(OutputRoot, AssetPackId + ".aar");
 
 		static Func<AddressableAssetSettings, AddressablesPlayerBuildResult> s_previousOverride;
@@ -165,6 +172,7 @@ namespace AppleBackgroundAssetsTest.EditorTools
 			if (Directory.Exists(PackStagingDir))
 				Directory.Delete(PackStagingDir, true);
 			Directory.CreateDirectory(PackStagingDir);
+			Directory.CreateDirectory(OutputRoot);
 			if (File.Exists(ArchivePath))
 				File.Delete(ArchivePath);
 
@@ -207,10 +215,13 @@ namespace AppleBackgroundAssetsTest.EditorTools
 		{
 			string package = "#!/bin/sh\n" +
 			                 "# Собирает .aar из подготовленной папки пака (нужен Xcode 26+).\n" +
+			                 "# Промежуточные файлы — здесь (Library/BackgroundAssetPacks), результат — в Builds/BackgroundAssetPacks.\n" +
 			                 "set -e\n" +
 			                 "cd \"$(dirname \"$0\")/" + AssetPackId + "\"\n" +
-			                 "xcrun ba-package ../" + AssetPackId + ".manifest.json -o ../" + AssetPackId + ".aar\n" +
-			                 "echo \"Created $(cd .. && pwd)/" + AssetPackId + ".aar\"\n";
+			                 "OUT=\"../../../" + OutputFolderName + "\"\n" +
+			                 "mkdir -p \"$OUT\"\n" +
+			                 "xcrun ba-package ../" + AssetPackId + ".manifest.json -o \"$OUT/" + AssetPackId + ".aar\"\n" +
+			                 "echo \"Created $(cd \"$OUT\" && pwd)/" + AssetPackId + ".aar\"\n";
 
 			string serve = "#!/bin/sh\n" +
 			               "# Локальный mock-сервер Background Assets.\n" +
@@ -222,7 +233,7 @@ namespace AppleBackgroundAssetsTest.EditorTools
 			               "echo \"URL Override на устройстве: https://$HOST\"\n" +
 			               "xcrun ba-serve --host \"$HOST\" -p 443 " + AssetPackId + ".aar\n";
 
-			File.WriteAllText(Path.Combine(OutputRoot, "package.sh"), package.Replace("\r\n", "\n"), new UTF8Encoding(false));
+			File.WriteAllText(Path.Combine(StagingRoot, "package.sh"), package.Replace("\r\n", "\n"), new UTF8Encoding(false));
 			File.WriteAllText(Path.Combine(OutputRoot, "serve.sh"), serve.Replace("\r\n", "\n"), new UTF8Encoding(false));
 		}
 
@@ -230,7 +241,7 @@ namespace AppleBackgroundAssetsTest.EditorTools
 		{
 			if (Application.platform != RuntimePlatform.OSXEditor)
 			{
-				Debug.Log("[BackgroundAssets] Not on macOS — .aar is not created. Copy the BackgroundAssetPacks folder to a Mac and run ./package.sh.");
+				Debug.Log("[BackgroundAssets] Not on macOS — .aar is not created. Copy Library/BackgroundAssetPacks to a Mac and run ./package.sh (.aar goes to Builds/BackgroundAssetPacks).");
 				return;
 			}
 

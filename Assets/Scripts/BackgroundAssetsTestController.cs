@@ -21,8 +21,8 @@ namespace AppleBackgroundAssetsTest
 	public class BackgroundAssetsTestController : MonoBehaviour
 	{
 		[Header("Identifiers")]
-		[Tooltip("ID of the Apple Asset Pack configured in ba-package / App Store Connect.")]
-		[SerializeField] private string assetPackId = "test_textures";
+		// ID пака задаётся в одном месте — BackgroundAssetsConfig.AssetPackId.
+		private static string assetPackId => BackgroundAssetsConfig.AssetPackId;
 
 		[Tooltip("Addressables label assigned to the test sprites.")]
 		[SerializeField] private string addressableLabel = "test_textures";
