@@ -59,7 +59,7 @@ namespace AppleBackgroundAssetsTest
                 }
             }
 
-            private void OnLoadCompleted(AsyncOperation op)
+            private void OnLoadCompleted(UnityEngine.AsyncOperation op)
             {
                 if (_completed)
                     return;
