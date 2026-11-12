@@ -22,9 +22,9 @@ namespace AppleBackgroundAssetsTest.EditorTools
 	///     чтобы список поддерживаемых устройств не сужался по сравнению с прошлыми версиями приложения.
 	/// Запускается после плагинов Apple (у них PostProcessBuild(10)).
 	/// </summary>
-	public static class XcodeProjectFixups
+	public static class XcodeSettingsPostProcesser
 	{
-		const string LogPrefix = "[XcodeFixups] ";
+		const string LogPrefix = "[XcodeSettingsPostProcesser] ";
 		const string DownloaderTargetName = "Downloader";
 		const string EmbedPhaseName = "Embed ExtensionKit Extensions";
 
