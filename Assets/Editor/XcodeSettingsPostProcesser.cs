@@ -20,6 +20,7 @@ namespace AppleBackgroundAssetsTest.EditorTools
 	///     и «Upload Symbols Failed» при загрузке в App Store Connect). Взято из рабочего проекта TF1 (XcodeSettingsPostProcesser).
 	///  4. Из Info.plist удаляются UIRequiredDeviceCapabilities и UIApplicationExitsOnSuspend — как в TF1,
 	///     чтобы список поддерживаемых устройств не сужался по сравнению с прошлыми версиями приложения.
+	///  5. Включается доступ к Documents через «Файлы» (UIFileSharingEnabled) — чтобы забирать app_log.txt.
 	/// Запускается после плагинов Apple (у них PostProcessBuild(10)).
 	/// </summary>
 	public static class XcodeSettingsPostProcesser
@@ -158,6 +159,13 @@ namespace AppleBackgroundAssetsTest.EditorTools
 					Debug.Log(LogPrefix + $"Info.plist: removed {key}.");
 				}
 			}
+			// Тестовая сборка: папка Documents (там app_log.txt) видна в «Файлы → На iPhone → TrueFear1»,
+			// чтобы лог можно было забрать, даже если приложение падает при запуске.
+			plist.root.SetBoolean("UIFileSharingEnabled", true);
+			plist.root.SetBoolean("LSSupportsOpeningDocumentsInPlace", true);
+			changed = true;
+			Debug.Log(LogPrefix + "Info.plist: UIFileSharingEnabled + LSSupportsOpeningDocumentsInPlace (логи доступны в «Файлах»).");
+
 			if (changed)
 				File.WriteAllText(plistPath, plist.WriteToString());
 		}

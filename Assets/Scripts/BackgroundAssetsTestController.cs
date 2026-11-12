@@ -44,7 +44,7 @@ namespace AppleBackgroundAssetsTest
 		private AsyncOperationHandle<IList<Sprite>> _addressablesHandle;
 		private int _currentIndex;
 		private bool _isBusy;
-		private int _lastLoggedProgressStep = -1;
+		private DownloadTrace _download;
 
 		private const string Tag = "BackgroundAssetsTest";
 
@@ -136,13 +136,17 @@ namespace AppleBackgroundAssetsTest
 			SetProgress(0f);
 
 #if !UNITY_EDITOR && (UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS || UNITY_STANDALONE_OSX)
+            // Отметка ДО нативного вызова: если приложение упадёт внутри него, это будет последней строкой лога.
+            LogManager.Log("AssetPack", $"Старт: AssetPackIsAvailableLocally('{assetPackId}')...");
             bool isLocal = AssetPackManager.AssetPackIsAvailableLocally(assetPackId);
             LogManager.Log("AssetPack", $"Старт: пак '{assetPackId}' локально доступен = {isLocal}");
             if (isLocal)
             {
-                SetStatus($"Пак '{assetPackId}' уже скачан локально. Загрузка спрайтов...");
+                // Не грузим спрайты автоматически при старте: если с паком что-то не так (например, загрузка
+                // была прервана), краш при старте не даст открыть приложение и достать лог. Загрузка — по кнопке.
+                SetStatus($"Пак '{assetPackId}' уже скачан локально. Нажмите «Загрузить», чтобы показать спрайты.");
                 SetProgress(1f);
-                await LoadSpritesFromAddressablesAsync();
+                await Task.CompletedTask;
             }
             else
             {
@@ -231,6 +235,7 @@ namespace AppleBackgroundAssetsTest
 
             SetProgress(isLocal ? 1f : 0f);
             SetStatus("Получение манифеста Apple...");
+            LogManager.Log("AssetPack", "GetManifestAsync()...");
             var manifestSw = Stopwatch.StartNew();
             AssetPackManifest manifest = await AssetPackManager.GetManifestAsync();
             AssetPack[] allPacks = manifest.GetAllAssetPacks();
@@ -261,13 +266,17 @@ namespace AppleBackgroundAssetsTest
                     "или запущен ba-serve и на устройстве задан URL Override.");
             }
 
+            float sizeMb = assetPack.GetDownloadSize() / (1024f * 1024f);
             LogManager.Log("AssetPack", $"Pack '{assetPackId}': version {assetPack.GetVersion()}, " +
-                      $"download size {assetPack.GetDownloadSize() / (1024f * 1024f):0.0} MB, local: {isLocal}");
+                      $"download size {sizeMb:0.0} MB, local: {isLocal}");
+            LogManager.Log("AssetPack", $"Сеть: {Application.internetReachability}");
+            await LogPackStatusAsync(assetPack, "до загрузки");
 
-            bool monitoringActive = true;
-            _lastLoggedProgressStep = -1;
-            _ = MonitorDownloadProgressAsync(() => monitoringActive);
             var downloadSw = Stopwatch.StartNew();
+            _download = new DownloadTrace(downloadSw, sizeMb);
+            bool monitoringActive = true;
+            _ = MonitorDownloadProgressAsync(_download, () => monitoringActive);
+            _ = DownloadWatchdogAsync(_download, assetPack, () => monitoringActive);
             LogManager.Log("AssetPack", $"EnsureLocalAvailabilityOfAssetPackAsync(shouldUpdate={checkForUpdates})...");
 
             try
@@ -276,9 +285,17 @@ namespace AppleBackgroundAssetsTest
                     ? $"Проверка обновлений пака '{assetPackId}'..."
                     : $"Скачивание пака '{assetPackId}'...");
                 await AssetPackManager.EnsureLocalAvailabilityOfAssetPackAsync(assetPack, checkForUpdates);
-                LogManager.Log("AssetPack", $"Пак доступен локально, заняло {downloadSw.Elapsed.TotalSeconds:0.0} с");
+                LogManager.Log("AssetPack", $"Пак доступен локально, заняло {downloadSw.Elapsed.TotalSeconds:0.0} с " +
+                                            $"(последнее событие: {_download.Describe()})");
                 SetProgress(1f);
                 SetStatus($"Пак '{assetPackId}' доступен локально.");
+            }
+            catch (Exception ex)
+            {
+                LogManager.Log("AssetPack", $"EnsureLocalAvailability завершился ошибкой через {downloadSw.Elapsed.TotalSeconds:0.0} с: " +
+                                            $"{LogManager.ShortMessage(ex)}; последнее событие: {_download.Describe()}");
+                await LogPackStatusAsync(assetPack, "после ошибки");
+                throw;
             }
             finally
             {
@@ -286,48 +303,147 @@ namespace AppleBackgroundAssetsTest
             }
         }
 
-        private async Task MonitorDownloadProgressAsync(Func<bool> isActive)
+        /// <summary>Логирует каждое событие загрузки от системы (Began / Paused / Downloading / Finished / Failed).</summary>
+        private async Task MonitorDownloadProgressAsync(DownloadTrace trace, Func<bool> isActive)
         {
+            bool terminal = false;
             try
             {
                 await foreach (AssetPackManager.DownloadStatusUpdate update in AssetPackManager.DownloadStatusUpdatesAsync(assetPackId))
                 {
-                    if (!isActive() || this == null)
+                    if (this == null)
                         break;
 
                     switch (update)
                     {
                         case AssetPackManager.DownloadStatusUpdate.Began:
-                            SetStatus($"Начата загрузка '{assetPackId}'...");
+                            trace.OnEvent("Began");
+                            LogManager.Log("AssetPack", $"[{trace.Elapsed:0.0} с] Began: загрузка начата/возобновлена");
+                            SetStatus($"Начата загрузка '{assetPackId}'...", log: false);
                             break;
+
                         case AssetPackManager.DownloadStatusUpdate.Paused:
-                            SetStatus($"Загрузка '{assetPackId}' на паузе...");
+                            trace.OnEvent("Paused");
+                            LogManager.Log("AssetPack", $"[{trace.Elapsed:0.0} с] Paused: система приостановила загрузку " +
+                                                        $"(сеть: {Application.internetReachability}, прогресс {trace.Progress * 100:0.00}%)");
+                            SetStatus($"Загрузка '{assetPackId}' на паузе...", log: false);
                             break;
+
                         case AssetPackManager.DownloadStatusUpdate.Downloading downloading:
+                            trace.OnProgress(downloading.Progress);
                             float progress = (float)downloading.Progress;
                             SetProgress(progress);
-                            SetStatus($"Скачивание: {progress * 100f:0}%", log: false);
-                            int step = Mathf.FloorToInt(progress * 10f);
-                            if (step != _lastLoggedProgressStep)
-                            {
-                                _lastLoggedProgressStep = step;
-                                LogManager.Log("AssetPack", $"Прогресс: {progress * 100f:0}%");
-                            }
+                            SetStatus($"Скачивание: {progress * 100f:0.0}%", log: false);
+                            if (trace.ShouldLogProgress())
+                                LogManager.Log("AssetPack", $"[{trace.Elapsed:0.0} с] Прогресс: {downloading.Progress * 100:0.00}% " +
+                                                            $"(~{downloading.Progress * trace.SizeMb:0.0} из {trace.SizeMb:0.0} MB, " +
+                                                            $"событий: {trace.EventCount})");
                             break;
+
                         case AssetPackManager.DownloadStatusUpdate.Finished:
+                            terminal = true;
+                            trace.OnEvent("Finished");
+                            LogManager.Log("AssetPack", $"[{trace.Elapsed:0.0} с] Finished: скачивание завершено, событий: {trace.EventCount}");
                             SetProgress(1f);
-                            SetStatus("Скачивание завершено.");
+                            SetStatus("Скачивание завершено.", log: false);
                             return;
+
                         case AssetPackManager.DownloadStatusUpdate.Failed failed:
-                            SetStatus($"Ошибка загрузки: {failed.Error}", log: false);
-                            LogManager.LogException("AssetPack", failed.Error, "DownloadStatusUpdate.Failed");
+                            terminal = true;
+                            trace.OnEvent("Failed");
+                            Exception failedSafe = LogManager.MakeSafe(failed.Error, "DownloadStatusUpdate.Failed");
+                            LogManager.Log("AssetPack", $"[{trace.Elapsed:0.0} с] Failed на {trace.Progress * 100:0.00}%: " +
+                                                        LogManager.ShortMessage(failedSafe));
+                            SetStatus($"Ошибка загрузки: {LogManager.ShortMessage(failedSafe)}", log: false);
+                            LogManager.LogException("AssetPack", failedSafe, "DownloadStatusUpdate.Failed");
                             return;
+
+                        default:
+                            trace.OnEvent(update.GetType().Name);
+                            LogManager.Log("AssetPack", $"[{trace.Elapsed:0.0} с] Неизвестное событие: {update}");
+                            break;
+                    }
+
+                    if (!isActive())
+                    {
+                        LogManager.Log("AssetPack", "Мониторинг событий остановлен: EnsureLocalAvailability уже завершился.");
+                        break;
+                    }
+                }
+
+                if (!terminal)
+                    LogManager.Log("AssetPack", $"Поток событий закрылся без Finished/Failed. Последнее: {trace.Describe()}");
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogException("AssetPack", ex, "Мониторинг прогресса");
+            }
+        }
+
+        /// <summary>
+        /// «Сторож»: раз в 5 с пишет, что происходит, даже если система молчит —
+        /// время с последнего события, прогресс, статус пака и сеть. Так видно, где именно загрузка встала.
+        /// </summary>
+        private async Task DownloadWatchdogAsync(DownloadTrace trace, AssetPack assetPack, Func<bool> isActive)
+        {
+            const int IntervalMs = 5000;
+            const double StallWarningSec = 30;
+            bool stallReported = false;
+            try
+            {
+                while (true)
+                {
+                    await Task.Delay(IntervalMs);
+                    if (!isActive() || this == null)
+                        return;
+
+                    string status = await DescribePackStatusAsync(assetPack);
+                    LogManager.Log("AssetPack", $"[{trace.Elapsed:0} с] Сторож: {trace.Describe()}; статус пака: {status}; " +
+                                                $"сеть: {Application.internetReachability}");
+
+                    if (trace.SinceLastEvent >= StallWarningSec && !stallReported)
+                    {
+                        stallReported = true;
+                        LogManager.Log("AssetPack", $"ВНИМАНИЕ: нет событий от системы {trace.SinceLastEvent:0} с " +
+                                                    $"(застряло на {trace.Progress * 100:0.00}%).");
+                    }
+                    else if (trace.SinceLastEvent < StallWarningSec && stallReported)
+                    {
+                        stallReported = false;
+                        LogManager.Log("AssetPack", "События снова пошли.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                LogManager.LogException("AssetPack", ex, "Мониторинг прогресса");
+                LogManager.LogException("AssetPack", ex, "Сторож загрузки");
+            }
+        }
+
+        private async Task LogPackStatusAsync(AssetPack assetPack, string when)
+        {
+            LogManager.Log("AssetPack", $"Статус пака ({when}): {await DescribePackStatusAsync(assetPack)}, " +
+                                        $"локально доступен = {AssetPackManager.AssetPackIsAvailableLocally(assetPackId)}");
+        }
+
+        private static async Task<string> DescribePackStatusAsync(AssetPack assetPack)
+        {
+            try
+            {
+                AssetPack.Status s = await AssetPackManager.GetAssetPackStatusAsync(assetPack);
+                var flags = new List<string>();
+                if (s.IsDownloadAvailable()) flags.Add("DownloadAvailable");
+                if (s.IsDownloading()) flags.Add("Downloading");
+                if (s.IsDownloaded()) flags.Add("Downloaded");
+                if (s.IsUpToDate()) flags.Add("UpToDate");
+                if (s.IsUpdateAvailable()) flags.Add("UpdateAvailable");
+                if (s.IsOutOfDate()) flags.Add("OutOfDate");
+                if (s.IsObsolete()) flags.Add("Obsolete");
+                return flags.Count == 0 ? "(нет флагов)" : string.Join(", ", flags);
+            }
+            catch (Exception ex)
+            {
+                return "ошибка запроса статуса: " + LogManager.ShortMessage(ex);
             }
         }
 #endif
@@ -453,6 +569,57 @@ namespace AppleBackgroundAssetsTest
 		{
 			if (progressSlider != null)
 				progressSlider.value = Mathf.Clamp01(value);
+		}
+
+		/// <summary>Состояние текущей загрузки пака — для подробного лога.</summary>
+		private sealed class DownloadTrace
+		{
+			private readonly Stopwatch _sw;
+			private double _lastEventAt;
+			private double _lastLoggedProgress = -1;
+			private double _lastLoggedAt = double.MinValue;
+
+			public DownloadTrace(Stopwatch sw, float sizeMb)
+			{
+				_sw = sw;
+				SizeMb = sizeMb;
+			}
+
+			public float SizeMb { get; }
+			public double Progress { get; private set; }
+			public string LastEvent { get; private set; } = "нет событий";
+			public int EventCount { get; private set; }
+			public double Elapsed => _sw.Elapsed.TotalSeconds;
+			public double SinceLastEvent => Elapsed - _lastEventAt;
+
+			public void OnEvent(string name)
+			{
+				LastEvent = name;
+				_lastEventAt = Elapsed;
+				EventCount++;
+			}
+
+			public void OnProgress(double progress)
+			{
+				Progress = progress;
+				OnEvent("Downloading");
+			}
+
+			/// <summary>Логировать каждый +1% и, если прогресс меняется медленно, не реже раза в 5 с.</summary>
+			public bool ShouldLogProgress()
+			{
+				bool bigStep = Progress - _lastLoggedProgress >= 0.01;
+				bool timeStep = Elapsed - _lastLoggedAt >= 5 && Progress != _lastLoggedProgress;
+				if (!bigStep && !timeStep && _lastLoggedProgress >= 0)
+					return false;
+				_lastLoggedProgress = Progress;
+				_lastLoggedAt = Elapsed;
+				return true;
+			}
+
+			public string Describe() =>
+				$"последнее событие {LastEvent} ({SinceLastEvent:0.0} с назад), прогресс {Progress * 100:0.00}%, " +
+				$"событий {EventCount}, прошло {Elapsed:0.0} с";
 		}
 
 		private void SetStatus(string message, bool log = true)

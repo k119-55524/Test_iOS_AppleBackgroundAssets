@@ -79,6 +79,8 @@ namespace AppleBackgroundAssetsTest
 		{
 			if (ex == null)
 				return;
+			if (IsAppleBackgroundAssetsError(ex))
+				GC.SuppressFinalize(ex); // см. MakeSafe: финализатор может освободить мусорный указатель
 
 			string header = string.IsNullOrEmpty(context) ? $"[{tag}]" : $"[{tag}] {context}:";
 			string text = header + " " + Describe(ex);
@@ -164,9 +166,35 @@ namespace AppleBackgroundAssetsTest
 			return sb.ToString();
 		}
 
+		/// <summary>
+		/// Apple.BackgroundAssets.Error (плагин Apple 1.0.0) хранит описание как сырой нативный указатель,
+		/// а его ToString() читает строку по этому указателю. После неудачного AssetPackManager.OpenFile
+		/// указатель оказывается мусорным — ToString() роняет приложение (SIGSEGV, KERN_INVALID_ADDRESS 0x1b),
+		/// и try/catch это не ловит. Поэтому ToString() у этого типа НИКОГДА не вызываем.
+		/// </summary>
+		public static bool IsAppleBackgroundAssetsError(Exception ex) =>
+			ex != null && ex.GetType().FullName == "Apple.BackgroundAssets.Error";
+
+		/// <summary>
+		/// Заменяет Apple.BackgroundAssets.Error на обычное исключение, которое безопасно логировать
+		/// и передавать дальше (например, в Addressables). Финализатор исходной ошибки отключается,
+		/// чтобы он не освобождал тот же мусорный указатель в потоке GC.
+		/// </summary>
+		public static Exception MakeSafe(Exception ex, string context)
+		{
+			if (!IsAppleBackgroundAssetsError(ex))
+				return ex;
+			GC.SuppressFinalize(ex);
+			return new System.IO.IOException($"{context}: Apple.BackgroundAssets.Error " +
+			                                  "(текст нативной ошибки не читается — его ToString() в плагине небезопасен)");
+		}
+
 		private static string BestMessage(Exception ex)
 		{
-			// Apple.BackgroundAssets.Error хранит описание только в ToString(), Message у него стандартный.
+			if (IsAppleBackgroundAssetsError(ex))
+				return "Apple.BackgroundAssets.Error (текст нативной ошибки не читается — его ToString() в плагине небезопасен)";
+
+			// Прочие исключения: если Message стандартный, пробуем первую строку ToString().
 			string message = ex.Message;
 			if (string.IsNullOrEmpty(message) || message.StartsWith("Exception of type"))
 			{

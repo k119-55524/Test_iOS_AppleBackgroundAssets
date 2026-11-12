@@ -55,10 +55,14 @@ namespace AppleBackgroundAssetsTest
                 }
                 catch (Exception ex)
                 {
-                    LogManager.LogException("BAProvider", ex, $"Не удалось открыть '{bundleFileName}' из пака");
+                    // Apple.BackgroundAssets.Error нельзя ни логировать через ToString(), ни отдавать в Addressables
+                    // (там его тоже напечатают) — заменяем на безопасное исключение. См. LogManager.MakeSafe.
+                    Exception safe = LogManager.MakeSafe(ex, $"AssetPackManager.OpenFile('{bundleFileName}')");
+                    LogManager.LogException("BAProvider", safe,
+                        $"Не удалось открыть '{bundleFileName}' из пака (пак не докачан или в нём другой бандл)");
                     DisposeStream();
                     _completed = true;
-                    provideHandle.Complete<BackgroundAssetBundleResource>(null, false, ex);
+                    provideHandle.Complete<BackgroundAssetBundleResource>(null, false, safe);
                 }
             }
 
