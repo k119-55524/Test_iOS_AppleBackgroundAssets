@@ -43,8 +43,10 @@ namespace AppleBackgroundAssetsTest
 
                 try
                 {
+                    UnityEngine.Debug.Log($"[BAProvider] OpenFile('{bundleFileName}')");
                     SafeFileHandle fileHandle = AssetPackManager.OpenFile(bundleFileName, null);
                     _stream = new FileStream(fileHandle, FileAccess.Read, 4096, false);
+                    UnityEngine.Debug.Log($"[BAProvider] Файл открыт, {_stream.Length / (1024f * 1024f):0.0} MB, LoadFromStreamAsync...");
                     _loadRequest = AssetBundle.LoadFromStreamAsync(_stream);
 
                     provideHandle.SetProgressCallback(() => _loadRequest != null ? _loadRequest.progress : 0f);
@@ -53,6 +55,7 @@ namespace AppleBackgroundAssetsTest
                 }
                 catch (Exception ex)
                 {
+                    LogManager.LogException("BAProvider", ex, $"Не удалось открыть '{bundleFileName}' из пака");
                     DisposeStream();
                     _completed = true;
                     provideHandle.Complete<BackgroundAssetBundleResource>(null, false, ex);
@@ -70,10 +73,12 @@ namespace AppleBackgroundAssetsTest
 
                 if (_assetBundle != null)
                 {
+                    UnityEngine.Debug.Log($"[BAProvider] Бандл загружен: {_assetBundle.name}");
                     _provideHandle.Complete(this, true, null);
                 }
                 else
                 {
+                    UnityEngine.Debug.LogError($"[BAProvider] LoadFromStreamAsync вернул null (файл повреждён или бандл из другой сборки): {_provideHandle.Location?.InternalId}");
                     DisposeStream();
                     string path = _provideHandle.Location?.InternalId ?? "<null>";
                     _provideHandle.Complete<BackgroundAssetBundleResource>(
@@ -87,6 +92,7 @@ namespace AppleBackgroundAssetsTest
             {
                 if (_loadRequest != null && !_loadRequest.isDone)
                 {
+                    UnityEngine.Debug.Log("[BAProvider] WaitForCompletion: синхронное ожидание загрузки бандла");
                     _assetBundle = _loadRequest.assetBundle;
                     OnLoadCompleted(_loadRequest);
                 }
@@ -103,6 +109,7 @@ namespace AppleBackgroundAssetsTest
             {
                 if (_assetBundle != null)
                 {
+                    UnityEngine.Debug.Log($"[BAProvider] Выгрузка бандла: {_assetBundle.name}");
                     AssetBundleUnloadOperation unloadOp = _assetBundle.UnloadAsync(true);
                     _assetBundle = null;
                     if (unloadOp != null)
@@ -112,12 +119,14 @@ namespace AppleBackgroundAssetsTest
                         {
                             DisposeStream();
                             s_pendingUnloads--;
+                            UnityEngine.Debug.Log($"[BAProvider] Бандл выгружен, файл пака закрыт (в очереди выгрузки: {s_pendingUnloads})");
                         };
                         return;
                     }
                 }
 
                 DisposeStream();
+                UnityEngine.Debug.Log("[BAProvider] Unload: файл пака закрыт");
             }
 
             private void DisposeStream()

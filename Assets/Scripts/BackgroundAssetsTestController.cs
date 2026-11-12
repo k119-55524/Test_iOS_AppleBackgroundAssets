@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 
 #if !UNITY_EDITOR && (UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS || UNITY_STANDALONE_OSX)
 using Apple.BackgroundAssets;
@@ -42,11 +44,18 @@ namespace AppleBackgroundAssetsTest
 		private AsyncOperationHandle<IList<Sprite>> _addressablesHandle;
 		private int _currentIndex;
 		private bool _isBusy;
+		private int _lastLoggedProgressStep = -1;
+
+		private const string Tag = "BackgroundAssetsTest";
 
 		public IReadOnlyList<Sprite> LoadedSprites => _loadedSprites;
 
 		private void Awake()
 		{
+			// Все исключения операций Addressables/ResourceManager — в лог с именем операции.
+			UnityEngine.ResourceManagement.ResourceManager.ExceptionHandler = (op, ex) =>
+				LogManager.LogException("ResourceManager", ex, op.IsValid() ? op.DebugName : "operation");
+
 			if (downloadButton != null)
 				downloadButton.onClick.AddListener(OnDownloadClicked);
 
@@ -64,7 +73,45 @@ namespace AppleBackgroundAssetsTest
 
 		private async void Start()
 		{
-			await RefreshInitialStateAsync();
+			try
+			{
+				await InitializeAddressablesAsync();
+				await RefreshInitialStateAsync();
+			}
+			catch (Exception ex)
+			{
+				LogManager.LogException(Tag, ex, "Инициализация");
+				SetStatus($"Ошибка инициализации: {LogManager.ShortMessage(ex)}", log: false);
+			}
+		}
+
+		private async Task InitializeAddressablesAsync()
+		{
+			LogManager.Log("Addressables", $"InitializeAsync... RuntimePath={Addressables.RuntimePath}");
+			var sw = Stopwatch.StartNew();
+			var init = Addressables.InitializeAsync(false);
+			await init.Task;
+
+			if (init.Status == AsyncOperationStatus.Succeeded)
+			{
+				var ids = new List<string>();
+				foreach (var locator in Addressables.ResourceLocators)
+					ids.Add(locator.LocatorId);
+				LogManager.Log("Addressables", $"Инициализировано за {sw.ElapsedMilliseconds} мс, локаторы: {string.Join(", ", ids)}");
+
+				var locations = Addressables.LoadResourceLocationsAsync(addressableLabel, typeof(Sprite));
+				await locations.Task;
+				int count = locations.Status == AsyncOperationStatus.Succeeded ? locations.Result.Count : -1;
+				LogManager.Log("Addressables", $"Метка '{addressableLabel}': {count} спрайтов в каталоге");
+				Addressables.Release(locations);
+			}
+			else
+			{
+				LogManager.Error("Addressables", "Инициализация не удалась");
+				LogManager.LogException("Addressables", init.OperationException, "InitializeAsync");
+			}
+
+			Addressables.Release(init);
 		}
 
 		private void OnDestroy()
@@ -90,6 +137,7 @@ namespace AppleBackgroundAssetsTest
 
 #if !UNITY_EDITOR && (UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS || UNITY_STANDALONE_OSX)
             bool isLocal = AssetPackManager.AssetPackIsAvailableLocally(assetPackId);
+            LogManager.Log("AssetPack", $"Старт: пак '{assetPackId}' локально доступен = {isLocal}");
             if (isLocal)
             {
                 SetStatus($"Пак '{assetPackId}' уже скачан локально. Загрузка спрайтов...");
@@ -111,6 +159,7 @@ namespace AppleBackgroundAssetsTest
 			if (_isBusy)
 				return;
 
+			LogManager.Log("UI", "Нажата кнопка «Загрузить»");
 			SetBusy(true);
 			try
 			{
@@ -121,8 +170,8 @@ namespace AppleBackgroundAssetsTest
 			}
 			catch (Exception ex)
 			{
-				Debug.LogException(ex);
-				SetStatus($"Ошибка: {ex.Message}");
+				LogManager.LogException(Tag, ex, "Загрузка пака / спрайтов");
+				SetStatus($"Ошибка: {LogManager.ShortMessage(ex)}", log: false);
 			}
 			finally
 			{
@@ -135,6 +184,7 @@ namespace AppleBackgroundAssetsTest
 			if (_isBusy)
 				return;
 
+			LogManager.Log("UI", "Нажата кнопка «Удалить пак»");
 			SetBusy(true);
 			try
 			{
@@ -144,17 +194,23 @@ namespace AppleBackgroundAssetsTest
 #if !UNITY_EDITOR && (UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS || UNITY_STANDALONE_OSX)
                 SetStatus($"Удаление пака '{assetPackId}'...");
                 // Дожидаемся, пока бандлы выгрузятся и закроют файлы пака.
+                var removeSw = Stopwatch.StartNew();
+                if (AppleBackgroundAssetBundleProvider.PendingUnloadCount > 0)
+                    LogManager.Log("AssetPack", $"Ожидание выгрузки бандлов: {AppleBackgroundAssetBundleProvider.PendingUnloadCount}");
                 while (AppleBackgroundAssetBundleProvider.PendingUnloadCount > 0)
                     await Task.Yield();
+                LogManager.Log("AssetPack", $"RemoveAssetPackAsync('{assetPackId}')...");
                 await AssetPackManager.RemoveAssetPackAsync(assetPackId);
+                LogManager.Log("AssetPack", $"Пак удалён за {removeSw.ElapsedMilliseconds} мс, локально доступен = " +
+                                            AssetPackManager.AssetPackIsAvailableLocally(assetPackId));
 #endif
 				SetProgress(0f);
 				SetStatus($"Пак '{assetPackId}' удалён.");
 			}
 			catch (Exception ex)
 			{
-				Debug.LogException(ex);
-				SetStatus($"Ошибка удаления: {ex.Message}");
+				LogManager.LogException(Tag, ex, "Удаление пака");
+				SetStatus($"Ошибка удаления: {LogManager.ShortMessage(ex)}", log: false);
 			}
 			finally
 			{
@@ -175,10 +231,16 @@ namespace AppleBackgroundAssetsTest
 
             SetProgress(isLocal ? 1f : 0f);
             SetStatus("Получение манифеста Apple...");
+            var manifestSw = Stopwatch.StartNew();
             AssetPackManifest manifest = await AssetPackManager.GetManifestAsync();
+            AssetPack[] allPacks = manifest.GetAllAssetPacks();
+            var packIds = new List<string>();
+            foreach (AssetPack p in allPacks)
+                packIds.Add(p.GetId());
+            LogManager.Log("AssetPack", $"Манифест получен за {manifestSw.ElapsedMilliseconds} мс, паков: {allPacks.Length} [{string.Join(", ", packIds)}]");
 
             AssetPack assetPack = null;
-            foreach (AssetPack pack in manifest.GetAllAssetPacks())
+            foreach (AssetPack pack in allPacks)
             {
                 if (pack.GetId() == assetPackId)
                 {
@@ -199,11 +261,14 @@ namespace AppleBackgroundAssetsTest
                     "или запущен ba-serve и на устройстве задан URL Override.");
             }
 
-            Debug.Log($"[BackgroundAssetsTest] Pack '{assetPackId}': version {assetPack.GetVersion()}, " +
+            LogManager.Log("AssetPack", $"Pack '{assetPackId}': version {assetPack.GetVersion()}, " +
                       $"download size {assetPack.GetDownloadSize() / (1024f * 1024f):0.0} MB, local: {isLocal}");
 
             bool monitoringActive = true;
+            _lastLoggedProgressStep = -1;
             _ = MonitorDownloadProgressAsync(() => monitoringActive);
+            var downloadSw = Stopwatch.StartNew();
+            LogManager.Log("AssetPack", $"EnsureLocalAvailabilityOfAssetPackAsync(shouldUpdate={checkForUpdates})...");
 
             try
             {
@@ -211,6 +276,7 @@ namespace AppleBackgroundAssetsTest
                     ? $"Проверка обновлений пака '{assetPackId}'..."
                     : $"Скачивание пака '{assetPackId}'...");
                 await AssetPackManager.EnsureLocalAvailabilityOfAssetPackAsync(assetPack, checkForUpdates);
+                LogManager.Log("AssetPack", $"Пак доступен локально, заняло {downloadSw.Elapsed.TotalSeconds:0.0} с");
                 SetProgress(1f);
                 SetStatus($"Пак '{assetPackId}' доступен локально.");
             }
@@ -240,21 +306,28 @@ namespace AppleBackgroundAssetsTest
                         case AssetPackManager.DownloadStatusUpdate.Downloading downloading:
                             float progress = (float)downloading.Progress;
                             SetProgress(progress);
-                            SetStatus($"Скачивание: {progress * 100f:0}%");
+                            SetStatus($"Скачивание: {progress * 100f:0}%", log: false);
+                            int step = Mathf.FloorToInt(progress * 10f);
+                            if (step != _lastLoggedProgressStep)
+                            {
+                                _lastLoggedProgressStep = step;
+                                LogManager.Log("AssetPack", $"Прогресс: {progress * 100f:0}%");
+                            }
                             break;
                         case AssetPackManager.DownloadStatusUpdate.Finished:
                             SetProgress(1f);
                             SetStatus("Скачивание завершено.");
                             return;
                         case AssetPackManager.DownloadStatusUpdate.Failed failed:
-                            SetStatus($"Ошибка загрузки: {failed.Error}");
+                            SetStatus($"Ошибка загрузки: {failed.Error}", log: false);
+                            LogManager.LogException("AssetPack", failed.Error, "DownloadStatusUpdate.Failed");
                             return;
                     }
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogWarning($"[BackgroundAssetsTest] Progress monitor ended: {ex.Message}");
+                LogManager.LogException("AssetPack", ex, "Мониторинг прогресса");
             }
         }
 #endif
@@ -264,6 +337,7 @@ namespace AppleBackgroundAssetsTest
 			ReleaseLoadedAssets();
 
 			SetStatus($"Загрузка Addressables ({addressableLabel})...");
+			var loadSw = Stopwatch.StartNew();
 			_addressablesHandle = Addressables.LoadAssetsAsync<Sprite>(addressableLabel, null);
 
 			while (!_addressablesHandle.IsDone)
@@ -276,7 +350,8 @@ namespace AppleBackgroundAssetsTest
 
 			if (_addressablesHandle.Status != AsyncOperationStatus.Succeeded)
 			{
-				SetStatus($"Ошибка Addressables: {_addressablesHandle.OperationException?.Message}");
+				SetStatus($"Ошибка Addressables: {LogManager.ShortMessage(_addressablesHandle.OperationException)}", log: false);
+				LogManager.LogException("Addressables", _addressablesHandle.OperationException, $"LoadAssetsAsync<Sprite>('{addressableLabel}')");
 				return;
 			}
 
@@ -292,6 +367,7 @@ namespace AppleBackgroundAssetsTest
 			UpdatePreviewDisplay();
 
 			SetProgress(1f);
+			LogManager.Log("Addressables", $"LoadAssetsAsync<Sprite>('{addressableLabel}') за {loadSw.ElapsedMilliseconds} мс");
 			SetStatus($"Готово! Загружено спрайтов: {_loadedSprites.Count}");
 		}
 
@@ -357,6 +433,7 @@ namespace AppleBackgroundAssetsTest
 			_loadedSprites.Clear();
 			if (_addressablesHandle.IsValid())
 			{
+				LogManager.Log("Addressables", "Release спрайтов (бандл будет выгружен)");
 				Addressables.Release(_addressablesHandle);
 				_addressablesHandle = default;
 			}
@@ -378,9 +455,10 @@ namespace AppleBackgroundAssetsTest
 				progressSlider.value = Mathf.Clamp01(value);
 		}
 
-		private void SetStatus(string message)
+		private void SetStatus(string message, bool log = true)
 		{
-			Debug.Log($"[BackgroundAssetsTest] {message}");
+			if (log)
+				LogManager.Log(Tag, message);
 			if (statusText != null)
 				statusText.text = message;
 		}
