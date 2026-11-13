@@ -18,6 +18,22 @@ namespace Apple.BackgroundAssets {
 		
 		#nullable enable
 		
+		// ===== DIAG LOG (Test_iOS_AppleBackgroundAssets): только логи, поведение плагина НЕ меняется =====
+		// Строки с префиксом [BAPlugin]. tN — managed-поток (1 обычно главный), ctx — адрес контекста вызова,
+		// sem#N — идентификатор объекта семафора, на котором C# ждёт ответ нативного кода.
+		static void BawLog(string message) {
+			UnityEngine.Debug.Log($"[BAPlugin] [t{Thread.CurrentThread.ManagedThreadId}] {message}");
+		}
+		static string Hex(IntPtr pointer) => "0x" + pointer.ToInt64().ToString("x");
+		static int SemId(SemaphoreSlim semaphore) => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(semaphore);
+		static string Describe(DownloadStatusUpdate? update) {
+			switch (update) {
+			case null: return "null";
+			case DownloadStatusUpdate.Downloading downloading: return $"Downloading({downloading.Progress:0.0000})";
+			default: return update.GetType().Name; // НЕ ToString(): у Failed он читает текст нативной ошибки
+			}
+		}
+		
 		enum baw_assetpackmanager_downloadstatusupdate_kind {
 			baw_assetpackmanager_downloadstatusupdate_kind_began,
 			baw_assetpackmanager_downloadstatusupdate_kind_paused,
@@ -568,12 +584,17 @@ namespace Apple.BackgroundAssets {
 			int contextSize = Marshal.SizeOf(context);
 			IntPtr contextPointer = Marshal.AllocHGlobal(contextSize);
 			Marshal.StructureToPtr(context, contextPointer, false);
+			BawLog($"DownloadStatusUpdatesAsync('{assetPackId}'): подписка, ctx={Hex(contextPointer)}, sem#{SemId(context.GetSemaphore())}");
 			baw_assetpackmanager_downloadstatusupdates(assetPackId, contextPointer, DownloadStatusUpdatesCallback);
+			BawLog($"DownloadStatusUpdatesAsync('{assetPackId}'): подписка зарегистрирована в нативном коде");
 			while (true) {
+				BawLog($"StatusStream ctx={Hex(contextPointer)}: жду sem#{SemId(context.GetSemaphore())}");
 				await context.GetSemaphore().WaitAsync();
+				BawLog($"StatusStream ctx={Hex(contextPointer)}: sem#{SemId(context.GetSemaphore())} сработал");
 				bool shouldBreak = false;
 				lock (context.GetLockObject()) {
 					context = Marshal.PtrToStructure<DownloadStatusUpdatesContext>(contextPointer);
+					BawLog($"StatusStream ctx={Hex(contextPointer)}: в слоте {Describe(context.GetStatusUpdate())}, семафор в контексте sem#{SemId(context.GetSemaphore())}");
 					if (context.GetStatusUpdate() is DownloadStatusUpdate statusUpdate) {
 						yield return statusUpdate;
 						if (statusUpdate.IsTerminal) {
@@ -582,8 +603,10 @@ namespace Apple.BackgroundAssets {
 					}
 					context.ResetSemaphore();
 					Marshal.StructureToPtr(context, contextPointer, true);
+					BawLog($"StatusStream ctx={Hex(contextPointer)}: ResetSemaphore → новый sem#{SemId(context.GetSemaphore())}");
 				}
 				if (shouldBreak) {
+					BawLog($"StatusStream ctx={Hex(contextPointer)}: терминальное событие, поток завершён");
 					break;
 				}
 			}
@@ -593,8 +616,13 @@ namespace Apple.BackgroundAssets {
 		static void DownloadStatusUpdatesCallback(baw_assetpackmanager_downloadstatusupdate cStatusUpdate, IntPtr contextPointer) {
 			DownloadStatusUpdatesContext context = Marshal.PtrToStructure<DownloadStatusUpdatesContext>(contextPointer);
 			AssetPack assetPack = new AssetPack(cStatusUpdate.assetpack);
+			string progressText = cStatusUpdate.kind == baw_assetpackmanager_downloadstatusupdate_kind.baw_assetpackmanager_downloadstatusupdate_kind_downloading
+				? $" progress={cStatusUpdate.payload.progress:0.0000}" : "";
+			BawLog($"NATIVE→C# статус: {cStatusUpdate.kind}{progressText}, пак '{assetPack.GetId()}', ctx={Hex(contextPointer)}, " +
+			       $"семафор в прочитанной копии sem#{SemId(context.GetSemaphore())}");
 			if (context.GetAssetPackId() is string assetPackId) {
 				if (assetPack.GetId() != assetPackId) {
+					BawLog($"NATIVE→C# статус: отфильтровано (подписка на '{assetPackId}')");
 					return; // Filter out status updates for other asset packs
 				}
 			}
@@ -618,6 +646,7 @@ namespace Apple.BackgroundAssets {
 				}
 				Marshal.StructureToPtr(context, contextPointer, true);
 				context.GetSemaphore().Release();
+				BawLog($"NATIVE→C# статус: записан в ctx={Hex(contextPointer)}, Release() sem#{SemId(context.GetSemaphore())}");
 			}
 		}
 		
@@ -628,8 +657,10 @@ namespace Apple.BackgroundAssets {
 			int contextSize = Marshal.SizeOf<ManifestContext>();
 			IntPtr contextPointer = Marshal.AllocHGlobal(contextSize);
 			Marshal.StructureToPtr(context, contextPointer, false);
+			BawLog($"GetManifestAsync: вызов, ctx={Hex(contextPointer)}");
 			baw_assetpackmanager_manifest(contextPointer, ManifestCallback);
 			await context.GetSemaphore().WaitAsync();
+			BawLog($"GetManifestAsync: ответ получен, ctx={Hex(contextPointer)}");
 			context = Marshal.PtrToStructure<ManifestContext>(contextPointer);
 			Marshal.FreeHGlobal(contextPointer);
 			return context.GetResult().Get();
@@ -637,6 +668,7 @@ namespace Apple.BackgroundAssets {
 		
 		[MonoPInvokeCallback(typeof(FManifest))]
 		static void ManifestCallback(AssetPackManifest.baw_assetpackmanifest_res cResult, Result<object, Error>.baw_res_kind cResultKind, IntPtr contextPointer) {
+			BawLog($"NATIVE→C# манифест: {cResultKind}, ctx={Hex(contextPointer)}");
 			ManifestContext context = Marshal.PtrToStructure<ManifestContext>(contextPointer);
 			switch (cResultKind) {
 			case Result<object, Error>.baw_res_kind.baw_res_kind_success:
@@ -679,6 +711,9 @@ namespace Apple.BackgroundAssets {
 		
 		[MonoPInvokeCallback(typeof(FAssetPackStatus))]
 		static void AssetPackStatusCallback(AssetPack.Status.baw_assetpack_status_res cResult, Result<object, Error>.baw_res_kind cResultKind, IntPtr contextPointer) {
+			BawLog($"NATIVE→C# статус пака: {cResultKind}" +
+			       (cResultKind == Result<object, Error>.baw_res_kind.baw_res_kind_success ? $", raw=0b{Convert.ToString(cResult.success, 2).PadLeft(7, '0')}" : "") +
+			       $", ctx={Hex(contextPointer)}");
 			AssetPackStatusContext context = Marshal.PtrToStructure<AssetPackStatusContext>(contextPointer);
 			switch (cResultKind) {
 			case Result<object, Error>.baw_res_kind.baw_res_kind_success:
@@ -720,6 +755,7 @@ namespace Apple.BackgroundAssets {
 		
 		[MonoPInvokeCallback(typeof(FAssetPackStatusLocal))]
 		static void LocalAssetPackStatusCallback(byte cStatus, IntPtr contextPointer) {
+			BawLog($"NATIVE→C# локальный статус: raw=0b{Convert.ToString(cStatus, 2).PadLeft(7, '0')}, ctx={Hex(contextPointer)}");
 			LocalAssetPackStatusContext context = Marshal.PtrToStructure<LocalAssetPackStatusContext>(contextPointer);
 			context.SetStatus(new AssetPack.Status(cStatus));
 			Marshal.StructureToPtr(context, contextPointer, true);
@@ -730,7 +766,9 @@ namespace Apple.BackgroundAssets {
 		/// <param name="assetPackId">The asset pack’s ID.</param>
 		/// <returns>Whether the asset pack is available locally.</returns>
 		public static bool AssetPackIsAvailableLocally(string id) {
-			return baw_assetpackmanager_assetpack_local(id);
+			bool result = baw_assetpackmanager_assetpack_local(id);
+			BawLog($"AssetPackIsAvailableLocally('{id}') = {result}");
+			return result;
 		}
 		
 		/// <summary>
@@ -745,8 +783,10 @@ namespace Apple.BackgroundAssets {
 			int contextSize = Marshal.SizeOf(context);
 			IntPtr contextPointer = Marshal.AllocHGlobal(contextSize);
 			Marshal.StructureToPtr(context, contextPointer, false);
+			BawLog($"EnsureLocalAvailability('{assetPack.GetId()}' v{assetPack.GetVersion()}): вызов, ctx={Hex(contextPointer)}, жду ответ нативного кода…");
 			baw_assetpackmanager_assetpack_local_ensure(assetPack.CAssetPack, contextPointer, EnsureLocalAvailabilityCallback);
 			await context.GetSemaphore().WaitAsync();
+			BawLog($"EnsureLocalAvailability('{assetPack.GetId()}'): ответ получен, ctx={Hex(contextPointer)}");
 			context = Marshal.PtrToStructure<EnsureLocalAvailabilityContext>(contextPointer);
 			Marshal.FreeHGlobal(contextPointer);
 			if (context.GetError() is Error error) {
@@ -767,8 +807,10 @@ namespace Apple.BackgroundAssets {
 			int contextSize = Marshal.SizeOf(context);
 			IntPtr contextPointer = Marshal.AllocHGlobal(contextSize);
 			Marshal.StructureToPtr(context, contextPointer, false);
+			BawLog($"EnsureLocalAvailability('{assetPack.GetId()}' v{assetPack.GetVersion()}, shouldUpdate={shouldUpdate}): вызов, ctx={Hex(contextPointer)}, жду ответ нативного кода…");
 			baw_assetpackmanager_assetpack_local_ensure_update(assetPack.CAssetPack, shouldUpdate, contextPointer, EnsureLocalAvailabilityCallback);
 			await context.GetSemaphore().WaitAsync();
+			BawLog($"EnsureLocalAvailability('{assetPack.GetId()}'): ответ получен, ctx={Hex(contextPointer)}");
 			context = Marshal.PtrToStructure<EnsureLocalAvailabilityContext>(contextPointer);
 			Marshal.FreeHGlobal(contextPointer);
 			if (context.GetError() is Error error) {
@@ -801,6 +843,7 @@ namespace Apple.BackgroundAssets {
 		
 		[MonoPInvokeCallback(typeof(FAssetPackLocalEnsure))]
 		static void EnsureLocalAvailabilityCallback(Error.baw_err cError, Result<object, Error>.baw_res_kind cResultKind, IntPtr contextPointer) {
+			BawLog($"NATIVE→C# EnsureLocalAvailability: {cResultKind}, ctx={Hex(contextPointer)}");
 			EnsureLocalAvailabilityContext context = Marshal.PtrToStructure<EnsureLocalAvailabilityContext>(contextPointer);
 			switch (cResultKind) {
 			case Result<object, Error>.baw_res_kind.baw_res_kind_success:
@@ -864,6 +907,7 @@ namespace Apple.BackgroundAssets {
 			int contextSize = Marshal.SizeOf(context);
 			IntPtr contextPointer = Marshal.AllocHGlobal(contextSize);
 			Marshal.StructureToPtr(context, contextPointer, false);
+			BawLog($"RemoveAssetPack('{id}'): вызов, ctx={Hex(contextPointer)}, жду ответ нативного кода…");
 			baw_assetpackmanager_assetpack_remove(id, contextPointer, RemoveAssetPackCallback);
 			await context.GetSemaphore().WaitAsync();
 			context = Marshal.PtrToStructure<RemoveAssetPackContext>(contextPointer);
@@ -875,6 +919,7 @@ namespace Apple.BackgroundAssets {
 		
 		[MonoPInvokeCallback(typeof(FAssetPackRemove))]
 		static void RemoveAssetPackCallback(Error.baw_err cError, Result<object, Error>.baw_res_kind cResultKind, IntPtr contextPointer) {
+			BawLog($"NATIVE→C# RemoveAssetPack: {cResultKind}, ctx={Hex(contextPointer)}");
 			RemoveAssetPackContext context = Marshal.PtrToStructure<RemoveAssetPackContext>(contextPointer);
 			switch (cResultKind) {
 			case Result<object, Error>.baw_res_kind.baw_res_kind_success:
@@ -979,6 +1024,7 @@ namespace Apple.BackgroundAssets {
 		public static SafeFileHandle OpenFile(string path, string? assetPackId) {
 			Error.baw_err cError;
 			int fileDescriptor = baw_assetpackmanager_open(path, assetPackId, out cError);
+			BawLog($"OpenFile('{path}', pack={assetPackId ?? "любой"}) → fd={fileDescriptor}" + (fileDescriptor < 0 ? " (ОШИБКА)" : ""));
 			if (fileDescriptor < 0) {
 				throw new Error(cError);
 			}

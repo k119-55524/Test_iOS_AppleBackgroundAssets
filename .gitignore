@@ -65,3 +65,6 @@ Thumbs.db
 # Burst: debug info next to the Xcode build folder (keep a copy per release build, not in git)
 *_BackUpThisFolder_ButDontShipItWithYourGame/
 *_BurstDebugInformation_DoNotShip/
+
+# Набор исправленных файлов для репозитория goblinzrepo/apple-packages (не коммитить сюда)
+/_apple-packages-patch/

@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
@@ -137,6 +141,7 @@ namespace AppleBackgroundAssetsTest
 
 #if !UNITY_EDITOR && (UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS || UNITY_STANDALONE_OSX)
             // Отметка ДО нативного вызова: если приложение упадёт внутри него, это будет последней строкой лога.
+            LogEnvironment("старт");
             LogManager.Log("AssetPack", $"Старт: AssetPackIsAvailableLocally('{assetPackId}')...");
             bool isLocal = AssetPackManager.AssetPackIsAvailableLocally(assetPackId);
             LogManager.Log("AssetPack", $"Старт: пак '{assetPackId}' локально доступен = {isLocal}");
@@ -204,7 +209,9 @@ namespace AppleBackgroundAssetsTest
                 while (AppleBackgroundAssetBundleProvider.PendingUnloadCount > 0)
                     await Task.Yield();
                 LogManager.Log("AssetPack", $"RemoveAssetPackAsync('{assetPackId}')...");
-                await AssetPackManager.RemoveAssetPackAsync(assetPackId);
+                // Та же ошибка плагина: при успешном удалении Task не завершается — ждём сами.
+                Task removeTask = AssetPackManager.RemoveAssetPackAsync(assetPackId);
+                await WaitUntilPackRemovedAsync(removeTask);
                 LogManager.Log("AssetPack", $"Пак удалён за {removeSw.ElapsedMilliseconds} мс, локально доступен = " +
                                             AssetPackManager.AssetPackIsAvailableLocally(assetPackId));
 #endif
@@ -269,8 +276,11 @@ namespace AppleBackgroundAssetsTest
             float sizeMb = assetPack.GetDownloadSize() / (1024f * 1024f);
             LogManager.Log("AssetPack", $"Pack '{assetPackId}': version {assetPack.GetVersion()}, " +
                       $"download size {sizeMb:0.0} MB, local: {isLocal}");
-            LogManager.Log("AssetPack", $"Сеть: {Application.internetReachability}");
-            await LogPackStatusAsync(assetPack, "до загрузки");
+            LogManager.Log("AssetPack", $"Параметры: assetPackId='{assetPackId}', метка Addressables='{addressableLabel}', " +
+                                        $"shouldUpdate={checkForUpdates}");
+            LogEnvironment("перед загрузкой");
+            await LogManifestDiagnosticsAsync(manifest, "перед загрузкой");
+            await LogPackFilesAsync("перед загрузкой");
 
             var downloadSw = Stopwatch.StartNew();
             _download = new DownloadTrace(downloadSw, sizeMb);
@@ -284,9 +294,13 @@ namespace AppleBackgroundAssetsTest
                 SetStatus(isLocal
                     ? $"Проверка обновлений пака '{assetPackId}'..."
                     : $"Скачивание пака '{assetPackId}'...");
-                await AssetPackManager.EnsureLocalAvailabilityOfAssetPackAsync(assetPack, checkForUpdates);
+                // См. WaitUntilPackAvailableAsync: Task из Ensure при успехе не завершается (ошибка плагина 1.0.0).
+                Task ensureTask = AssetPackManager.EnsureLocalAvailabilityOfAssetPackAsync(assetPack, checkForUpdates);
+                await WaitUntilPackAvailableAsync(ensureTask);
                 LogManager.Log("AssetPack", $"Пак доступен локально, заняло {downloadSw.Elapsed.TotalSeconds:0.0} с " +
                                             $"(последнее событие: {_download.Describe()})");
+                await LogPackStatusAsync(assetPack, "после загрузки");
+                await LogPackFilesAsync("после загрузки");
                 SetProgress(1f);
                 SetStatus($"Пак '{assetPackId}' доступен локально.");
             }
@@ -295,6 +309,8 @@ namespace AppleBackgroundAssetsTest
                 LogManager.Log("AssetPack", $"EnsureLocalAvailability завершился ошибкой через {downloadSw.Elapsed.TotalSeconds:0.0} с: " +
                                             $"{LogManager.ShortMessage(ex)}; последнее событие: {_download.Describe()}");
                 await LogPackStatusAsync(assetPack, "после ошибки");
+                await LogPackFilesAsync("после ошибки");
+                LogEnvironment("после ошибки");
                 throw;
             }
             finally
@@ -420,6 +436,78 @@ namespace AppleBackgroundAssetsTest
             }
         }
 
+        // ======================= Обход ошибки нативной части плагина Apple 1.0.0 =======================
+        //
+        // В BackgroundAssetsWrapper (plug-ins/Apple.BackgroundAssets/Native/.../AssetPackManager.swift)
+        // функции baw_assetpackmanager_assetpack_local_ensure / _ensure_update / _remove вызывают
+        // completion-callback ТОЛЬКО при ошибке (в catch). При успехе callback не вызывается вообще,
+        // поэтому C#-Task EnsureLocalAvailabilityOfAssetPackAsync / RemoveAssetPackAsync при успехе
+        // НИКОГДА не завершается. Ждём результат сами: ошибка из Task ИЛИ изменение локальной доступности пака.
+
+        private async Task WaitUntilPackAvailableAsync(Task ensureTask)
+        {
+            const int PollMs = 1000;
+            var sw = Stopwatch.StartNew();
+            int polls = 0;
+            while (true)
+            {
+                if (ensureTask.IsCompleted)
+                {
+                    await ensureTask; // при ошибке пробросит исключение
+                    LogManager.Log("AssetPack", $"EnsureLocalAvailability завершился штатно за {sw.Elapsed.TotalSeconds:0.0} с");
+                    return;
+                }
+                if (AssetPackManager.AssetPackIsAvailableLocally(assetPackId))
+                {
+                    LogManager.Log("AssetPack", $"Пак стал доступен локально через {sw.Elapsed.TotalSeconds:0.0} с (опрос #{polls}). " +
+                                                "EnsureLocalAvailability при этом не ответил — ожидаемо для плагина 1.0.0.");
+                    _ = ObserveLateCompletionAsync(ensureTask, "EnsureLocalAvailability");
+                    return;
+                }
+                polls++;
+                await Task.Delay(PollMs);
+            }
+        }
+
+        private async Task WaitUntilPackRemovedAsync(Task removeTask)
+        {
+            const int PollMs = 500;
+            const double TimeoutSec = 30;
+            var sw = Stopwatch.StartNew();
+            while (sw.Elapsed.TotalSeconds < TimeoutSec)
+            {
+                if (removeTask.IsCompleted)
+                {
+                    await removeTask;
+                    return;
+                }
+                if (!AssetPackManager.AssetPackIsAvailableLocally(assetPackId))
+                {
+                    LogManager.Log("AssetPack", $"Пак больше не доступен локально через {sw.Elapsed.TotalSeconds:0.0} с " +
+                                                "(RemoveAssetPack не ответил — ожидаемо для плагина 1.0.0)");
+                    _ = ObserveLateCompletionAsync(removeTask, "RemoveAssetPack");
+                    return;
+                }
+                await Task.Delay(PollMs);
+            }
+            _ = ObserveLateCompletionAsync(removeTask, "RemoveAssetPack");
+            throw new TimeoutException($"Пак '{assetPackId}' не удалился за {TimeoutSec:0} с");
+        }
+
+        /// <summary>Если «повисший» Task всё-таки когда-нибудь завершится — запишем это в лог.</summary>
+        private static async Task ObserveLateCompletionAsync(Task task, string name)
+        {
+            try
+            {
+                await task;
+                LogManager.Log("AssetPack", $"{name}: Task неожиданно завершился позже (успех)");
+            }
+            catch (Exception ex)
+            {
+                LogManager.LogException("AssetPack", LogManager.MakeSafe(ex, name), $"{name}: Task завершился позже с ошибкой");
+            }
+        }
+
         private async Task LogPackStatusAsync(AssetPack assetPack, string when)
         {
             LogManager.Log("AssetPack", $"Статус пака ({when}): {await DescribePackStatusAsync(assetPack)}, " +
@@ -430,20 +518,192 @@ namespace AppleBackgroundAssetsTest
         {
             try
             {
-                AssetPack.Status s = await AssetPackManager.GetAssetPackStatusAsync(assetPack);
-                var flags = new List<string>();
-                if (s.IsDownloadAvailable()) flags.Add("DownloadAvailable");
-                if (s.IsDownloading()) flags.Add("Downloading");
-                if (s.IsDownloaded()) flags.Add("Downloaded");
-                if (s.IsUpToDate()) flags.Add("UpToDate");
-                if (s.IsUpdateAvailable()) flags.Add("UpdateAvailable");
-                if (s.IsOutOfDate()) flags.Add("OutOfDate");
-                if (s.IsObsolete()) flags.Add("Obsolete");
-                return flags.Count == 0 ? "(нет флагов)" : string.Join(", ", flags);
+                return StatusFlags(await AssetPackManager.GetAssetPackStatusAsync(assetPack));
             }
             catch (Exception ex)
             {
-                return "ошибка запроса статуса: " + LogManager.ShortMessage(ex);
+                return "ошибка запроса статуса: " + LogManager.ShortMessage(LogManager.MakeSafe(ex, "GetAssetPackStatusAsync"));
+            }
+        }
+
+        /// <summary>Статус по данным только с устройства (без сети).</summary>
+        private static async Task<string> DescribeLocalPackStatusAsync(string id)
+        {
+            try
+            {
+                return StatusFlags(await AssetPackManager.GetLocalAssetPackStatusAsync(id));
+            }
+            catch (Exception ex)
+            {
+                return "ошибка запроса статуса: " + LogManager.ShortMessage(LogManager.MakeSafe(ex, "GetLocalAssetPackStatusAsync"));
+            }
+        }
+
+        private static string StatusFlags(AssetPack.Status s)
+        {
+            var flags = new List<string>();
+            if (s.IsDownloadAvailable()) flags.Add("DownloadAvailable");
+            if (s.IsDownloading()) flags.Add("Downloading");
+            if (s.IsDownloaded()) flags.Add("Downloaded");
+            if (s.IsUpToDate()) flags.Add("UpToDate");
+            if (s.IsUpdateAvailable()) flags.Add("UpdateAvailable");
+            if (s.IsOutOfDate()) flags.Add("OutOfDate");
+            if (s.IsObsolete()) flags.Add("Obsolete");
+            return flags.Count == 0 ? "(нет флагов)" : string.Join(", ", flags);
+        }
+
+        // ======================= Подробная диагностика =======================
+
+        /// <summary>
+        /// Все паки из манифеста Apple: версия, точный размер, статус с сервера и локальный статус.
+        /// </summary>
+        private async Task LogManifestDiagnosticsAsync(AssetPackManifest manifest, string when)
+        {
+            var sb = new StringBuilder();
+            AssetPack[] packs = manifest.GetAllAssetPacks();
+            sb.Append($"Манифест ({when}): паков {packs.Length}");
+            foreach (AssetPack p in packs)
+            {
+                string id = p.GetId();
+                long bytes = p.GetDownloadSize();
+                sb.Append($"\n  • {id}{(id == assetPackId ? "  ← наш" : "")}: версия {p.GetVersion()}, " +
+                          $"размер {bytes / (1024f * 1024f):0.00} MB ({bytes} байт)");
+                sb.Append($"\n      статус (сервер+устройство): {await DescribePackStatusAsync(p)}");
+                sb.Append($"\n      статус (только устройство): {await DescribeLocalPackStatusAsync(id)}");
+                sb.Append($"\n      AssetPackIsAvailableLocally: {AssetPackManager.AssetPackIsAvailableLocally(id)}");
+            }
+            if (Array.FindIndex(packs, p => p.GetId() == assetPackId) < 0)
+                sb.Append($"\n  ВНИМАНИЕ: пака '{assetPackId}' в манифесте нет.");
+            LogManager.Log("Diag", sb.ToString());
+        }
+
+        /// <summary>
+        /// Какие файлы бандлов ждёт каталог Addressables из пака и есть ли они на устройстве.
+        /// Если имени нет в паке (собран другой сборкой Unity) — увидим это здесь, а не крашем.
+        /// </summary>
+        private async Task LogPackFilesAsync(string when)
+        {
+            var sb = new StringBuilder();
+            List<string> files = await GetExpectedBundleFilesAsync();
+            sb.Append($"Файлы пака, которые ждёт каталог Addressables ({when}): {files.Count}");
+            foreach (string file in files)
+            {
+                string state;
+                try
+                {
+                    Uri uri = AssetPackManager.GetUriForFile(file);
+                    string path = uri.LocalPath;
+                    state = File.Exists(path)
+                        ? $"ЕСТЬ, {new FileInfo(path).Length / (1024f * 1024f):0.00} MB"
+                        : "нет";
+                    state += $"\n      путь: {path}";
+                }
+                catch (Exception ex)
+                {
+                    state = "ошибка: " + LogManager.ShortMessage(LogManager.MakeSafe(ex, "GetUriForFile"));
+                }
+                sb.Append($"\n  • {file}: {state}");
+            }
+            LogManager.Log("Diag", sb.ToString());
+        }
+
+        private async Task<List<string>> GetExpectedBundleFilesAsync()
+        {
+            var result = new List<string>();
+            AsyncOperationHandle<IList<IResourceLocation>> handle =
+                Addressables.LoadResourceLocationsAsync(addressableLabel, typeof(Sprite));
+            await handle.Task;
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                foreach (IResourceLocation location in handle.Result)
+                    CollectPackBundles(location, result);
+            }
+            Addressables.Release(handle);
+            return result;
+        }
+
+        private static void CollectPackBundles(IResourceLocation location, List<string> into)
+        {
+            if (location.Dependencies == null)
+                return;
+            foreach (IResourceLocation dependency in location.Dependencies)
+            {
+                if (dependency.ProviderId != null && dependency.ProviderId.Contains(nameof(AppleBackgroundAssetBundleProvider)))
+                {
+                    string name = Path.GetFileName(dependency.InternalId);
+                    if (!into.Contains(name))
+                        into.Add(name);
+                }
+                CollectPackBundles(dependency, into);
+            }
+        }
+
+        /// <summary>
+        /// Окружение: устройство, сеть, батарея, место на диске, ключи Background Assets в Info.plist
+        /// и наличие расширения Downloader.appex (без него система не может качать паки).
+        /// Только C#, без нативных вызовов — безопасно вызывать при старте.
+        /// </summary>
+        private static void LogEnvironment(string when)
+        {
+            var sb = new StringBuilder();
+            sb.Append($"Окружение ({when}):");
+            sb.Append($"\n  устройство: {SystemInfo.deviceModel}, {SystemInfo.operatingSystem}, RAM {SystemInfo.systemMemorySize} MB");
+            sb.Append($"\n  приложение: {Application.identifier} {Application.version}, Unity {Application.unityVersion}");
+            sb.Append($"\n  сеть: {Application.internetReachability}");
+            sb.Append($"\n  батарея: {SystemInfo.batteryLevel * 100f:0}% ({SystemInfo.batteryStatus})");
+            sb.Append($"\n  свободно на диске: {FreeDiskSpaceText()}");
+
+            string appDir = Path.GetDirectoryName(Application.dataPath); // …/TrueFear1.app
+            string appex = Path.Combine(appDir, "Extensions", "Downloader.appex");
+            bool hasAppex = Directory.Exists(appex);
+            sb.Append($"\n  Extensions/Downloader.appex: {(hasAppex ? "есть" : "НЕТ — система не сможет качать паки")}");
+            if (hasAppex)
+                sb.Append($", Info.plist расширения: {(File.Exists(Path.Combine(appex, "Info.plist")) ? "есть" : "НЕТ")}");
+            sb.Append($"\n  Info.plist приложения: {InfoPlistKeysText(Path.Combine(appDir, "Info.plist"))}");
+            LogManager.Log("Diag", sb.ToString());
+        }
+
+        private static string FreeDiskSpaceText()
+        {
+            try
+            {
+                string target = Application.persistentDataPath;
+                DriveInfo best = null;
+                foreach (DriveInfo drive in DriveInfo.GetDrives())
+                {
+                    string root = drive.RootDirectory.FullName;
+                    if (target.StartsWith(root, StringComparison.Ordinal) &&
+                        (best == null || root.Length > best.RootDirectory.FullName.Length))
+                        best = drive;
+                }
+                if (best == null)
+                    return "не определено";
+                return $"{best.AvailableFreeSpace / (1024d * 1024 * 1024):0.00} GB из {best.TotalSize / (1024d * 1024 * 1024):0} GB";
+            }
+            catch (Exception ex)
+            {
+                return $"недоступно ({ex.GetType().Name})";
+            }
+        }
+
+        /// <summary>Info.plist в бандле бинарный, поэтому проверяем наличие ключей по их ASCII-именам.</summary>
+        private static string InfoPlistKeysText(string plistPath)
+        {
+            try
+            {
+                if (!File.Exists(plistPath))
+                    return "файл не найден";
+                string raw = Encoding.ASCII.GetString(File.ReadAllBytes(plistPath));
+                var parts = new List<string>();
+                foreach (string key in new[] { "BAHasManagedAssetPacks", "BAUsesAppleHosting", "BAAppGroupID" })
+                    parts.Add($"{key}={(raw.Contains(key) ? "есть" : "НЕТ")}");
+                Match group = Regex.Match(raw, @"group\.[A-Za-z0-9.\-]+");
+                parts.Add($"App Group: {(group.Success ? group.Value : "не найден")}");
+                return string.Join(", ", parts);
+            }
+            catch (Exception ex)
+            {
+                return $"не прочитан ({ex.GetType().Name})";
             }
         }
 #endif
