@@ -8,7 +8,6 @@ using UnityEngine.ResourceManagement.ResourceProviders;
 
 #if !UNITY_EDITOR && (UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS || UNITY_STANDALONE_OSX)
 using Apple.BackgroundAssets;
-using Microsoft.Win32.SafeHandles;
 #endif
 
 namespace AppleBackgroundAssetsTest
@@ -43,11 +42,20 @@ namespace AppleBackgroundAssetsTest
 
                 try
                 {
-                    UnityEngine.Debug.Log($"[BAProvider] OpenFile('{bundleFileName}')");
-                    SafeFileHandle fileHandle = AssetPackManager.OpenFile(bundleFileName, null);
-                    _stream = new FileStream(fileHandle, FileAccess.Read, 4096, false);
-                    UnityEngine.Debug.Log($"[BAProvider] Файл открыт, {_stream.Length / (1024f * 1024f):0.0} MB, LoadFromStreamAsync...");
-                    _loadRequest = AssetBundle.LoadFromStreamAsync(_stream);
+                    // ВАЖНО: не используем AssetPackManager.OpenFile + new FileStream(SafeFileHandle).
+                    // OpenFile возвращает сырой POSIX-дескриптор (например 27), а IL2CPP внутри FileStream
+                    // трактует «handle» как указатель на свою структуру файла и разыменовывает его —
+                    // SIGSEGV, KERN_INVALID_ADDRESS 0x1b (= 27, номер дескриптора). Так падали все запуски
+                    // после успешной загрузки пака. Вместо этого берём путь к файлу в паке и грузим бандл
+                    // штатным AssetBundle.LoadFromFileAsync — без потоков и дескрипторов.
+                    UnityEngine.Debug.Log($"[BAProvider] GetUriForFile('{bundleFileName}')");
+                    string path = AssetPackManager.GetUriForFile(bundleFileName).LocalPath;
+                    bool exists = File.Exists(path);
+                    UnityEngine.Debug.Log($"[BAProvider] Путь: {path}, файл {(exists ? $"есть, {new FileInfo(path).Length / (1024f * 1024f):0.0} MB" : "НЕ найден")}");
+                    if (!exists)
+                        throw new FileNotFoundException($"Бандл '{bundleFileName}' не найден в скачанных паках (пак не докачан или собран другой сборкой).", path);
+                    UnityEngine.Debug.Log("[BAProvider] LoadFromFileAsync...");
+                    _loadRequest = AssetBundle.LoadFromFileAsync(path);
 
                     provideHandle.SetProgressCallback(() => _loadRequest != null ? _loadRequest.progress : 0f);
                     provideHandle.SetWaitForCompletionCallback(WaitForCompletion);
@@ -57,7 +65,7 @@ namespace AppleBackgroundAssetsTest
                 {
                     // Apple.BackgroundAssets.Error нельзя ни логировать через ToString(), ни отдавать в Addressables
                     // (там его тоже напечатают) — заменяем на безопасное исключение. См. LogManager.MakeSafe.
-                    Exception safe = LogManager.MakeSafe(ex, $"AssetPackManager.OpenFile('{bundleFileName}')");
+                    Exception safe = LogManager.MakeSafe(ex, $"AssetPackManager.GetUriForFile('{bundleFileName}')");
                     LogManager.LogException("BAProvider", safe,
                         $"Не удалось открыть '{bundleFileName}' из пака (пак не докачан или в нём другой бандл)");
                     DisposeStream();
@@ -82,7 +90,7 @@ namespace AppleBackgroundAssetsTest
                 }
                 else
                 {
-                    UnityEngine.Debug.LogError($"[BAProvider] LoadFromStreamAsync вернул null (файл повреждён или бандл из другой сборки): {_provideHandle.Location?.InternalId}");
+                    UnityEngine.Debug.LogError($"[BAProvider] LoadFromFileAsync вернул null (файл повреждён или бандл из другой сборки): {_provideHandle.Location?.InternalId}");
                     DisposeStream();
                     string path = _provideHandle.Location?.InternalId ?? "<null>";
                     _provideHandle.Complete<BackgroundAssetBundleResource>(
