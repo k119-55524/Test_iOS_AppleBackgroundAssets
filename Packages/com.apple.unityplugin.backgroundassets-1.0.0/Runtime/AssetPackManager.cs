@@ -1,6 +1,7 @@
 using AOT;
 using Microsoft.Win32.SafeHandles;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -198,11 +199,20 @@ namespace Apple.BackgroundAssets {
 			[MarshalAs(UnmanagedType.IUnknown)]
 			object? AssetPackId;
 			
+			// LOCAL FIX (Test_iOS_AppleBackgroundAssets): очередь событий вместо одного слота StatusUpdate.
+			[MarshalAs(UnmanagedType.IUnknown)]
+			object Queue;
+			
 			internal DownloadStatusUpdatesContext(string? assetPackId) {
 				this.LockObject = new object();
 				this.StatusUpdate = null;
 				this.Semaphore = new SemaphoreSlim(0);
 				this.AssetPackId = assetPackId;
+				this.Queue = new ConcurrentQueue<DownloadStatusUpdate>();
+			}
+			
+			internal ConcurrentQueue<DownloadStatusUpdate> GetQueue() {
+				return (ConcurrentQueue<DownloadStatusUpdate>) this.Queue;
 			}
 			
 			internal object GetLockObject() {
@@ -558,16 +568,13 @@ namespace Apple.BackgroundAssets {
 			int contextSize = Marshal.SizeOf(context);
 			IntPtr contextPointer = Marshal.AllocHGlobal(contextSize);
 			Marshal.StructureToPtr(context, contextPointer, false);
+			BawLog($"DownloadStatusUpdatesAsync(все паки): подписка, ctx={Hex(contextPointer)}");
 			baw_assetpackmanager_downloadstatusupdates(null, contextPointer, DownloadStatusUpdatesCallback);
+			// LOCAL FIX: см. комментарий в DownloadStatusUpdatesCallback.
 			while (true) {
 				await context.GetSemaphore().WaitAsync();
-				lock (context.GetLockObject()) {
-					context = Marshal.PtrToStructure<DownloadStatusUpdatesContext>(contextPointer);
-					if (context.GetStatusUpdate() is DownloadStatusUpdate statusUpdate) {
-						yield return statusUpdate;
-					}
-					context.ResetSemaphore();
-					Marshal.StructureToPtr(context, contextPointer, true);
+				if (context.GetQueue().TryDequeue(out DownloadStatusUpdate? statusUpdate)) {
+					yield return statusUpdate;
 				}
 			}
 		}
@@ -584,70 +591,65 @@ namespace Apple.BackgroundAssets {
 			int contextSize = Marshal.SizeOf(context);
 			IntPtr contextPointer = Marshal.AllocHGlobal(contextSize);
 			Marshal.StructureToPtr(context, contextPointer, false);
-			BawLog($"DownloadStatusUpdatesAsync('{assetPackId}'): подписка, ctx={Hex(contextPointer)}, sem#{SemId(context.GetSemaphore())}");
+			BawLog($"DownloadStatusUpdatesAsync('{assetPackId}'): подписка, ctx={Hex(contextPointer)}");
 			baw_assetpackmanager_downloadstatusupdates(assetPackId, contextPointer, DownloadStatusUpdatesCallback);
-			BawLog($"DownloadStatusUpdatesAsync('{assetPackId}'): подписка зарегистрирована в нативном коде");
+			// LOCAL FIX: см. комментарий в DownloadStatusUpdatesCallback.
 			while (true) {
-				BawLog($"StatusStream ctx={Hex(contextPointer)}: жду sem#{SemId(context.GetSemaphore())}");
 				await context.GetSemaphore().WaitAsync();
-				BawLog($"StatusStream ctx={Hex(contextPointer)}: sem#{SemId(context.GetSemaphore())} сработал");
-				bool shouldBreak = false;
-				lock (context.GetLockObject()) {
-					context = Marshal.PtrToStructure<DownloadStatusUpdatesContext>(contextPointer);
-					BawLog($"StatusStream ctx={Hex(contextPointer)}: в слоте {Describe(context.GetStatusUpdate())}, семафор в контексте sem#{SemId(context.GetSemaphore())}");
-					if (context.GetStatusUpdate() is DownloadStatusUpdate statusUpdate) {
-						yield return statusUpdate;
-						if (statusUpdate.IsTerminal) {
-							shouldBreak = true;
-						}
+				if (context.GetQueue().TryDequeue(out DownloadStatusUpdate? statusUpdate)) {
+					yield return statusUpdate;
+					if (statusUpdate.IsTerminal) {
+						BawLog($"StatusStream ctx={Hex(contextPointer)}: терминальное событие {Describe(statusUpdate)}, поток завершён");
+						break;
 					}
-					context.ResetSemaphore();
-					Marshal.StructureToPtr(context, contextPointer, true);
-					BawLog($"StatusStream ctx={Hex(contextPointer)}: ResetSemaphore → новый sem#{SemId(context.GetSemaphore())}");
-				}
-				if (shouldBreak) {
-					BawLog($"StatusStream ctx={Hex(contextPointer)}: терминальное событие, поток завершён");
-					break;
 				}
 			}
 		}
 		
 		[MonoPInvokeCallback(typeof(FDownloadStatusUpdates))]
 		static void DownloadStatusUpdatesCallback(baw_assetpackmanager_downloadstatusupdate cStatusUpdate, IntPtr contextPointer) {
+			// LOCAL FIX (Test_iOS_AppleBackgroundAssets) — исправление гонки в плагине Apple 1.0.0.
+			// Оригинал: callback читал копию контекста ДО lock, а потребитель внутри lock подменял семафор
+			// (ResetSemaphore) и писал контекст обратно. Пришедшее в этот момент событие затирало контекст
+			// устаревшей копией и делало Release() старого семафора — потребитель навсегда ждал новый, и
+			// прогресс «замирал» на 0–5% (подтверждено логом: все события после 0,24% шли в старый семафор).
+			// Кроме того, один слот StatusUpdate терял события, пришедшие подряд.
+			// Теперь: общая очередь + один постоянный семафор (ссылочные объекты, одинаковые во всех копиях
+			// структуры); контекст после создания больше не перезаписывается, поэтому гонки нет.
 			DownloadStatusUpdatesContext context = Marshal.PtrToStructure<DownloadStatusUpdatesContext>(contextPointer);
 			AssetPack assetPack = new AssetPack(cStatusUpdate.assetpack);
-			string progressText = cStatusUpdate.kind == baw_assetpackmanager_downloadstatusupdate_kind.baw_assetpackmanager_downloadstatusupdate_kind_downloading
-				? $" progress={cStatusUpdate.payload.progress:0.0000}" : "";
-			BawLog($"NATIVE→C# статус: {cStatusUpdate.kind}{progressText}, пак '{assetPack.GetId()}', ctx={Hex(contextPointer)}, " +
-			       $"семафор в прочитанной копии sem#{SemId(context.GetSemaphore())}");
 			if (context.GetAssetPackId() is string assetPackId) {
 				if (assetPack.GetId() != assetPackId) {
-					BawLog($"NATIVE→C# статус: отфильтровано (подписка на '{assetPackId}')");
 					return; // Filter out status updates for other asset packs
 				}
 			}
-			lock (context.GetLockObject()) {
-				switch (cStatusUpdate.kind) {
-				case baw_assetpackmanager_downloadstatusupdate_kind.baw_assetpackmanager_downloadstatusupdate_kind_began:
-					context.SetStatusUpdate(new DownloadStatusUpdate.Began(assetPack));
-					break;
-				case baw_assetpackmanager_downloadstatusupdate_kind.baw_assetpackmanager_downloadstatusupdate_kind_paused:
-					context.SetStatusUpdate(new DownloadStatusUpdate.Paused(assetPack));
-					break;
-				case baw_assetpackmanager_downloadstatusupdate_kind.baw_assetpackmanager_downloadstatusupdate_kind_downloading:
-					context.SetStatusUpdate(new DownloadStatusUpdate.Downloading(assetPack, cStatusUpdate.payload.progress));
-					break;
-				case baw_assetpackmanager_downloadstatusupdate_kind.baw_assetpackmanager_downloadstatusupdate_kind_finished:
-					context.SetStatusUpdate(new DownloadStatusUpdate.Finished(assetPack));
-					break;
-				case baw_assetpackmanager_downloadstatusupdate_kind.baw_assetpackmanager_downloadstatusupdate_kind_failed:
-					context.SetStatusUpdate(new DownloadStatusUpdate.Failed(assetPack, new Error(cStatusUpdate.payload.err)));
-					break;
-				}
-				Marshal.StructureToPtr(context, contextPointer, true);
-				context.GetSemaphore().Release();
-				BawLog($"NATIVE→C# статус: записан в ctx={Hex(contextPointer)}, Release() sem#{SemId(context.GetSemaphore())}");
+			DownloadStatusUpdate? statusUpdate = null;
+			switch (cStatusUpdate.kind) {
+			case baw_assetpackmanager_downloadstatusupdate_kind.baw_assetpackmanager_downloadstatusupdate_kind_began:
+				statusUpdate = new DownloadStatusUpdate.Began(assetPack);
+				break;
+			case baw_assetpackmanager_downloadstatusupdate_kind.baw_assetpackmanager_downloadstatusupdate_kind_paused:
+				statusUpdate = new DownloadStatusUpdate.Paused(assetPack);
+				break;
+			case baw_assetpackmanager_downloadstatusupdate_kind.baw_assetpackmanager_downloadstatusupdate_kind_downloading:
+				statusUpdate = new DownloadStatusUpdate.Downloading(assetPack, cStatusUpdate.payload.progress);
+				break;
+			case baw_assetpackmanager_downloadstatusupdate_kind.baw_assetpackmanager_downloadstatusupdate_kind_finished:
+				statusUpdate = new DownloadStatusUpdate.Finished(assetPack);
+				break;
+			case baw_assetpackmanager_downloadstatusupdate_kind.baw_assetpackmanager_downloadstatusupdate_kind_failed:
+				statusUpdate = new DownloadStatusUpdate.Failed(assetPack, new Error(cStatusUpdate.payload.err));
+				break;
 			}
+			if (statusUpdate == null) {
+				return;
+			}
+			// Прогресс приходит сотнями событий в секунду — в лог пишем только смену типа события.
+			if (!(statusUpdate is DownloadStatusUpdate.Downloading)) {
+				BawLog($"NATIVE→C# статус: {Describe(statusUpdate)}, пак '{assetPack.GetId()}', ctx={Hex(contextPointer)}");
+			}
+			context.GetQueue().Enqueue(statusUpdate);
+			context.GetSemaphore().Release();
 		}
 		
 		/// <summary>Returns the manifest of asset packs that are available to download.</summary>

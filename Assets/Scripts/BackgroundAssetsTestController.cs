@@ -201,13 +201,25 @@ namespace AppleBackgroundAssetsTest
 				UpdatePreviewDisplay();
 
 #if !UNITY_EDITOR && (UNITY_IOS || UNITY_TVOS || UNITY_VISIONOS || UNITY_STANDALONE_OSX)
+                // Пак не скачан — удалять нечего. Без этой проверки RemoveAssetPack вернул бы ошибку,
+                // и она попала бы в лог как исключение, хотя ничего плохого не произошло.
+                if (!AssetPackManager.AssetPackIsAvailableLocally(assetPackId))
+                {
+                    LogManager.Log("AssetPack", $"Пак '{assetPackId}' не скачан — удалять нечего");
+                    SetProgress(0f);
+                    SetStatus($"Пак '{assetPackId}' не скачан — удалять нечего.");
+                    return;
+                }
+
                 SetStatus($"Удаление пака '{assetPackId}'...");
-                // Дожидаемся, пока бандлы выгрузятся и закроют файлы пака.
+                // Дожидаемся, пока бандлы выгрузятся и закроют файлы пака (не дольше 10 с).
                 var removeSw = Stopwatch.StartNew();
                 if (AppleBackgroundAssetBundleProvider.PendingUnloadCount > 0)
                     LogManager.Log("AssetPack", $"Ожидание выгрузки бандлов: {AppleBackgroundAssetBundleProvider.PendingUnloadCount}");
-                while (AppleBackgroundAssetBundleProvider.PendingUnloadCount > 0)
+                while (AppleBackgroundAssetBundleProvider.PendingUnloadCount > 0 && removeSw.Elapsed.TotalSeconds < 10)
                     await Task.Yield();
+                if (AppleBackgroundAssetBundleProvider.PendingUnloadCount > 0)
+                    LogManager.Log("AssetPack", $"Бандлы не выгрузились за 10 с (осталось {AppleBackgroundAssetBundleProvider.PendingUnloadCount}) — удаляем пак всё равно");
                 LogManager.Log("AssetPack", $"RemoveAssetPackAsync('{assetPackId}')...");
                 // Та же ошибка плагина: при успешном удалении Task не завершается — ждём сами.
                 Task removeTask = AssetPackManager.RemoveAssetPackAsync(assetPackId);
@@ -765,6 +777,8 @@ namespace AppleBackgroundAssetsTest
 			UpdatePreviewDisplay();
 		}
 
+		private static readonly Color EmptyPreviewColor = new Color(0.15f, 0.16f, 0.2f, 1f);
+
 		private void UpdatePreviewDisplay()
 		{
 			int count = _loadedSprites.Count;
@@ -772,7 +786,10 @@ namespace AppleBackgroundAssetsTest
 			{
 				_currentIndex = 0;
 				if (previewImage != null)
+				{
 					previewImage.sprite = null;
+					previewImage.color = EmptyPreviewColor; // тёмная пустая рамка
+				}
 				if (previewCounterText != null)
 					previewCounterText.text = "0 / 0";
 			}
@@ -784,6 +801,9 @@ namespace AppleBackgroundAssetsTest
 				{
 					previewImage.sprite = sprite;
 					previewImage.preserveAspect = true;
+					// Цвет Image умножается на спрайт. На сцене задан тёмный (0.15, 0.16, 0.2) для пустой рамки —
+					// с ним картинка выводится на ~15% яркости. При показе спрайта цвет должен быть белым.
+					previewImage.color = Color.white;
 				}
 				if (previewCounterText != null)
 				{
